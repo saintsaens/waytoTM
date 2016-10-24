@@ -30,7 +30,6 @@ def get_direct_elements(root_dir_path):
 
 def merge_folders(root_path, merging_criteria):
     # Create destination folder for all files in the list of folders to squash.
-    # TODO: create function for the correct name, and match the wildcard.
     merged_folder = root_path + "/Merged " + merging_criteria
     if not os.path.exists(merged_folder):
         os.makedirs(merged_folder)
