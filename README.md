@@ -43,3 +43,24 @@ In each album there will be:
 - all FLAC files (unchanged)
 - optionally one or several .jpg or .png artwork files (unchanged)
 - one merged folder for each [320], [V0] or [V2], with the artworks.
+```
+- FLACs
+-- Album 1
+--- Merged [320]
+--- Merged [V0]
+--- Merged [V2]
+--- Song1.flac
+--- Song2.flac
+--- Song3.flac
+--- cover.jpg
+--- cover.png
+-- Album 2
+--- Merged [320]
+--- Merged [V0]
+--- Merged [V2]
+--- Song1.flac
+--- Song2.flac
+--- Song3.flac
+--- cover.jpg
+--- cover.png
+```
