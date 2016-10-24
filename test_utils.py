@@ -4,6 +4,7 @@
 import utils
 import mover
 import os
+import shutil
 
 TEST_PATH = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore"
 
@@ -55,17 +56,16 @@ def test_copy_from_list():
     for x in input_list:
         total_length += len(utils.get_direct_elements(x))
     dst_folder = TEST_PATH + "/folder3/Mergetest "
-    # TODO: if directory exists, purge it.
     if not os.path.exists(dst_folder):
         os.makedirs(dst_folder)
     utils.copy_from_list(input_list, dst_folder)
     assert len(utils.get_direct_elements(dst_folder)) == total_length
+    shutil.rmtree(dst_folder)
 
 
 def test_copy_images():
     src_folder = TEST_PATH + "/folder3"
     dst_folder = TEST_PATH + "/folder3/Mergetest "
-    # TODO: if directory exists, purge it.
     if not os.path.exists(dst_folder):
         os.makedirs(dst_folder)
     utils.copy_images(src_folder, dst_folder)
@@ -83,3 +83,4 @@ def test_copy_images():
             list_of_dst_images.append(y)
 
     assert len(list_of_dst_images) == len(list_of_src_images)
+    shutil.rmtree(dst_folder)
