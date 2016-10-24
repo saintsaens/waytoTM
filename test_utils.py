@@ -73,17 +73,13 @@ def test_copy_images():
     list_src_to_check = os.listdir(src_folder)
     list_of_src_images = []
     for x in list_src_to_check:
-        if ".jpg" in x:
-            list_of_src_images.append(x)
-        elif ".png in x":
+        if ".jpg" in x or ".png" in x:
             list_of_src_images.append(x)
 
     list_dst_to_check = os.listdir(dst_folder)
     list_of_dst_images = []
     for y in list_dst_to_check:
-        if ".jpg" in y:
-            list_of_dst_images.append(y)
-        elif ".png in y":
+        if ".jpg" in y or ".png" in y:
             list_of_dst_images.append(y)
 
     assert len(list_of_dst_images) == len(list_of_src_images)

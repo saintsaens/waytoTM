@@ -103,9 +103,7 @@ def copy_images(src_dir, dst_dir):
     # Get list of all images in src directory.
     list_src_of_images = []
     for x in list_to_check:
-        if ".jpg" in x:
-            list_src_of_images.append(x)
-        elif ".png" in x:
+        if ".jpg" in x or ".png" in x:
             list_src_of_images.append(x)
 
     # Copy each image onto the dst directory.
