@@ -4,3 +4,4 @@
 .cache
 *.pyc
 personal_constants.py
+__pycache__
