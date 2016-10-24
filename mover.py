@@ -2,15 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import utils
+import personal_constants
 
-FLAC_FOLDER = "/Users/flavien/Music/What/FLAC"
-MP3_FORMATS = ["[320]", "[V0]", "[V2]"]
 MP3_320 = "[320]"
 MP3_V0 = "[V0]"
 MP3_V2 = "[V2]"
+MP3_FORMATS = [MP3_320, MP3_V0, MP3_V2]
 
 # Get all subfolders in FLAC_FOLDER (level 0).
-flac_dirs_lvl_0 = utils.get_direct_subdirs(FLAC_FOLDER)
+flac_dirs_lvl_0 = utils.get_direct_subdirs(personal_constants.FLAC_FOLDER)
 
 for x in flac_dirs_lvl_0:
     # print "Getting contents of " + x + "..."
