@@ -8,6 +8,34 @@ In each album there must be:
 - all FLAC files
 - optionally one or several .jpg or .png artwork files
 - all transcoded folders with [320], [V0] or [V2] in their names
+```
+- FLACs
+-- Album 1
+--- Artist 1 - Album 1 [320]
+--- Artist 2 - Album 1 [320]
+--- Artist 1 - Album 1 [V0]
+--- Artist 2 - Album 1 [V0]
+--- Artist 1 - Album 1 [V2]
+--- Artist 2 - Album 1 [V2]
+--- Song1.flac
+--- Song2.flac
+--- Song3.flac
+--- cover.jpg
+--- cover.png
+-- Album 2
+--- Artist 1 - Album 2 [320]
+--- Artist 2 - Album 2 [320]
+--- Artist 1 - Album 2 [V0]
+--- Artist 2 - Album 2 [V0]
+--- Artist 1 - Album 2 [V2]
+--- Artist 2 - Album 2 [V2]
+--- Song1.flac
+--- Song2.flac
+--- Song3.flac
+--- cover.jpg
+--- cover.png
+```
+
 
 ## Final state
 General folder containing all albums in FLAC.
