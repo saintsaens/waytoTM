@@ -81,11 +81,9 @@ def check_level(root_path, check_criteria):
 def check_image(root_path):
     list_to_check = get_direct_elements(root_path)
     for x in list_to_check:
-        if ".jpg" in x:
-            return 1
-        elif ".png" in x:
-            return 1
-    return 0
+        if ".jpg" in x or ".png" in x:
+            return True
+    return False
 
 
 def copy_from_list(src_dirs_list, dst_dir):

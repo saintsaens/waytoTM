@@ -38,13 +38,13 @@ def test_check_level_320_ok():
 
 def test_check_image_fail():
     path_to_fail = TEST_PATH + "/folder1"
-    assert utils.check_image(path_to_fail) == 0
-    assert utils.check_image(TEST_PATH) == 0
+    assert utils.check_image(path_to_fail) == False
+    assert utils.check_image(TEST_PATH) == False
 
 
 def test_check_image_success():
     path_to_success = TEST_PATH + "/folder3"
-    assert utils.check_image(path_to_success) == 1
+    assert utils.check_image(path_to_success) == True
 
 
 def test_copy_from_list():
