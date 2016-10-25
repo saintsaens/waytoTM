@@ -6,7 +6,9 @@ import shutil
 
 
 def get_direct_subdirs(root_dir_path):
-    """Return the list of directories (excluding files) directly under the directory root_dir_path."""
+    """Return the list of directories (excluding files) directly under the directory root_dir_path.
+    :rtype: list
+    """
     # Get list of immediate subdirectories.
     list_of_subdirs = filter(os.path.isdir, [os.path.join(root_dir_path, f) for f in os.listdir(root_dir_path)])
 
@@ -14,7 +16,9 @@ def get_direct_subdirs(root_dir_path):
 
 
 def get_direct_elements(root_dir_path):
-    """Return the list of directories and files directly under the directory root_dir_path."""
+    """Return the list of directories and files directly under the directory root_dir_path.
+    :rtype: list
+    """
     # Get list of immediate elements.
     stub_list = os.listdir(root_dir_path)
 
@@ -29,7 +33,9 @@ def get_direct_elements(root_dir_path):
 
 
 def merge_folders(root_path, merging_criteria):
-    """Return a folder containing the files of all folders in root_path with merging_criteria in their name."""
+    """Return a folder containing the files of all folders in root_path with merging_criteria in their name.
+    :rtype: path
+    """
     # Create destination folder for all files in the list of folders to squash.
     merged_folder = root_path + "/Merged " + merging_criteria
     if not os.path.exists(merged_folder):
@@ -49,7 +55,9 @@ def merge_folders(root_path, merging_criteria):
 
 def get_list_of_mergeables(root_path, merging_criteria, not_that_one):
     """Return the list of folders in root_path with merging_criteria in their name,
-    except for folders with not_that_one in their name"""
+    except for folders with not_that_one in their name.
+    :rtype: list
+    """
     # Get list of folders with naming criteria.
     list_of_subdirs = get_direct_subdirs(root_path)
     dirs_to_merge = []
@@ -63,7 +71,9 @@ def get_list_of_mergeables(root_path, merging_criteria, not_that_one):
 
 
 def level_has_doublons(root_path, check_criteria):
-    """Return True if root_path has at least 2 folders with check_criteria in their names, and False otherwise."""
+    """Return True if root_path has at least 2 folders with check_criteria in their names, and False otherwise.
+    :rtype: bool
+    """
     # print "Checking level \"" + root_path + "\" for " + check_criteria + " occurences..."
     list_of_subdirs = get_direct_subdirs(root_path)
     list_to_check = []
@@ -79,7 +89,9 @@ def level_has_doublons(root_path, check_criteria):
 
 
 def level_has_image(root_path):
-    """Return True if there is at least a file with ".jpg" or ".png" in root_path."""
+    """Return True if there is at least a file with ".jpg" or ".png" in root_path.
+    :rtype: bool
+    """
     list_to_check = get_direct_elements(root_path)
     for x in list_to_check:
         if ".jpg" in x or ".png" in x:

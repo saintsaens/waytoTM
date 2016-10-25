@@ -33,14 +33,14 @@ for x in flac_dirs_lvl_0:
         for y in flac_dirs_lvl_1:
             logging.debug("Looking at " + y + "...")
             # Check if there are at least 2 directories with 320 at lvl 2, and merge them.
-            if utils.level_has_doublons(y, MP3_320) == "NOK":
+            if utils.level_has_doublons(y, MP3_320) is True:
                 merged_dir = utils.merge_folders(y, MP3_320)
                 # Copy cover art.
                 if utils.level_has_image(y):
                     utils.copy_images(y, merged_dir)
     else:
         # Check if there are at least 2 directories with 320 at lvl 1, and merge them.
-        if utils.level_has_doublons(x, MP3_320) == "NOK":
+        if utils.level_has_doublons(x, MP3_320) is True:
             utils.merge_folders(x, MP3_320)
 
 logging.debug("Checking the number of files in new folder matches number of files in FLAC folder.")
