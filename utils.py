@@ -133,3 +133,18 @@ def copy_images(src_dir, dst_dir):
         dst_file_path = dst_dir + "/" + x
         if not os.path.exists(dst_file_path):
             shutil.copyfile(src_file_path, dst_file_path)
+
+
+def get_flacs(src_dir):
+    """
+    Get the list of all flac files in src_dir.
+
+    :param src_dir: path to the directory containing all the flac files to get.
+    :return: list of flac files
+    """
+    list_of_flacs = []
+    elements = get_direct_elements(src_dir)
+    for x in elements:
+        if ".flac" in x:
+            list_of_flacs.append(x)
+    return list_of_flacs

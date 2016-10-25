@@ -81,3 +81,9 @@ def test_copy_images():
 
     assert len(list_of_dst_images) == len(list_of_src_images)
     shutil.rmtree(dst_folder)
+
+
+def test_get_flac_list():
+    src_folder = TEST_PATH + "/folder2"
+    list_of_flacs = utils.get_flacs(src_folder)
+    assert len(list_of_flacs) == 3
