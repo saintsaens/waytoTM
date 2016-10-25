@@ -49,7 +49,7 @@ def merge_folders(root_path, merging_criteria):
 def get_list_of_mergeables(root_path, merging_criteria, not_that_one):
     # Get list of folders with naming criteria.
     list_of_subdirs = get_direct_subdirs(root_path)
-    dirs_to_merge =[]
+    dirs_to_merge = []
     for x in list_of_subdirs:
         if merging_criteria in x:
             # Don't scan the wildcard

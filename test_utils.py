@@ -14,7 +14,7 @@ def test_get_direct_subdirs():
     assert len(utils.get_direct_subdirs(TEST_PATH)) == 3
 
 
-def test_get_direct_elements_type():
+def test_get_direct_elements():
     assert type(utils.get_direct_elements(TEST_PATH)) == list
     assert len(utils.get_direct_elements(TEST_PATH)) == 4
 
@@ -39,13 +39,13 @@ def test_check_level_320_ok():
 
 def test_check_image_fail():
     path_to_fail = TEST_PATH + "/folder1"
-    assert utils.check_image(path_to_fail) == False
-    assert utils.check_image(TEST_PATH) == False
+    assert utils.check_image(path_to_fail) is False
+    assert utils.check_image(TEST_PATH) is False
 
 
 def test_check_image_success():
     path_to_success = TEST_PATH + "/folder3"
-    assert utils.check_image(path_to_success) == True
+    assert utils.check_image(path_to_success) is True
 
 
 def test_copy_from_list():

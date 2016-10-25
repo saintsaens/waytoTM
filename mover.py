@@ -44,4 +44,3 @@ for x in flac_dirs_lvl_0:
 
 logging.debug("Checking the number of files in new folder matches number of files in FLAC folder.")
 logging.debug("Deleting old folders.")
-
