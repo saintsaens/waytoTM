@@ -100,7 +100,10 @@ def level_has_image(root_path):
 
 
 def copy_from_list(src_dirs_list, dst_dir):
-    """Copy the contents of each item in src_dirs_list into dst_dir."""
+    """Copy the contents of each item in src_dirs_list into dst_dir.
+
+    If file already exists, do not copy it.
+    """
     for x in src_dirs_list:
         files_to_move = os.listdir(x)
         for y in files_to_move:
@@ -112,7 +115,10 @@ def copy_from_list(src_dirs_list, dst_dir):
 
 
 def copy_images(src_dir, dst_dir):
-    """Copy all files with \".jpg\" or \".png\" in src_dir into dst_dir."""
+    """Copy all files with \".jpg\" or \".png\" in src_dir into dst_dir.
+
+    If file already exists, do not copy it.
+    """
     list_to_check = os.listdir(src_dir)
 
     # Get list of all images in src directory.
