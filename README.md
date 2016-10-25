@@ -1,8 +1,8 @@
 # waytoTM
 Merging all folders that were divided into separate artists when transcoding a lossless source from various artists.
 
-10/25: Copy artwork from original folder to transcoded folders.
-10/24: Merge folders.
+- 10/25: Copy artwork from original folder to transcoded folders.
+- 10/24: Merge folders.
 
 ## Initial state
 General folder containing all albums in FLAC.
