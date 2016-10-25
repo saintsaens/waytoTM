@@ -11,6 +11,7 @@ MP3_V0 = "[V0]"
 MP3_V2 = "[V2]"
 MP3_FORMATS = [MP3_320, MP3_V0, MP3_V2]
 
+# ================================ PART 0: LOGGING THINGS =================================
 if __name__ == '__main__':
     levels = ['info', 'debug', 'error', 'warning', 'critical']
     parser = argparse.ArgumentParser()
@@ -18,6 +19,7 @@ if __name__ == '__main__':
                         choices=['info', 'debug', 'error', 'warning', 'critical'])
     args = parser.parse_args()
     logging.basicConfig(level=getattr(logging, args.level.upper()))
+
 
 # ==================================== PART 2: MERGING ====================================
 # Get all subfolders in FLAC_FOLDER (level 0).
@@ -27,10 +29,9 @@ logging.debug("Getting list of all folders at level 0:" + str(flac_dirs_lvl_0))
 for x in flac_dirs_lvl_0:
     logging.debug("Looking at " + x + "...")
     logging.debug("Checking if there is another level...")
-    if utils.get_direct_subdirs(x):
+    if utils.get_direct_subdirs(x, MP3_FORMATS):
         # There is another level, so dance once again: get all subdirs in the current subdir of FLAC_FOLDER (level 1).
-        # TODO: add a condition to get only FLAC folders (exclude 320).
-        flac_dirs_lvl_1 = utils.get_direct_subdirs(x)
+        flac_dirs_lvl_1 = utils.get_direct_subdirs(x, MP3_FORMATS)
         logging.debug("Yes: " + str(flac_dirs_lvl_1))
         for y in flac_dirs_lvl_1:
             logging.debug("Looking at " + y + "...")

@@ -10,8 +10,10 @@ TEST_PATH = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore"
 
 
 def test_get_direct_subdirs():
+    src_folder = TEST_PATH + "/folder1"
     assert type(utils.get_direct_subdirs(TEST_PATH)) == list
     assert len(utils.get_direct_subdirs(TEST_PATH)) == 3
+    assert len(utils.get_direct_subdirs(src_folder, ["[320]", "[V0]", "[V2]"])) == 2
 
 
 def test_get_direct_elements():

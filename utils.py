@@ -5,12 +5,32 @@ import os
 import shutil
 
 
-def get_direct_subdirs(root_dir_path):
-    """Return the list of directories (excluding files) directly under the directory root_dir_path.
+def get_direct_subdirs(root_dir_path, excluding_criteria=[]):
+    """Return the list of directories (excluding files) directly under the directory root_dir_path, except
+    folders containing name_criteria.
+
     :rtype: list
+    :param root_dir_path: path to folder where to get the direct subdirectories.
+    :param excluding_criteria: string excluding folders containing it in their name.
+    :return: list of direct subdirectories.
     """
-    # Get list of immediate subdirectories.
-    list_of_subdirs = filter(os.path.isdir, [os.path.join(root_dir_path, f) for f in os.listdir(root_dir_path)])
+    raw_list_of_subdirs = filter(os.path.isdir, [os.path.join(root_dir_path, f) for f in os.listdir(root_dir_path)])
+    list_of_subdirs = []
+    # TODO: this method of excluding criteria should be improved.
+    list_of_bad_subdirs = []
+    if len(excluding_criteria) > 0:
+        # Create a list with all the bad folders.
+        for x in raw_list_of_subdirs:
+            for y in excluding_criteria:
+                if y in x and x not in list_of_subdirs:
+                    list_of_bad_subdirs.append(x)
+
+        # Create the opposite list.
+        for z in raw_list_of_subdirs:
+            if z not in list_of_bad_subdirs:
+                list_of_subdirs.append(z)
+    else:
+        list_of_subdirs = raw_list_of_subdirs
 
     return list_of_subdirs
 
