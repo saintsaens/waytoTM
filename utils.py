@@ -3,6 +3,7 @@
 
 import os
 import shutil
+from unidecode import unidecode
 
 
 def get_direct_subdirs(root_dir_path, excluding_criteria=[]):
@@ -57,7 +58,7 @@ def merge_folders(root_path, merging_criteria):
     :rtype: path
     """
     # Create destination folder for all files in the list of folders to squash.
-    merged_folder = root_path + "/Merged " + merging_criteria
+    merged_folder = get_ascii_path(root_path) + "/Merged " + merging_criteria
     if not os.path.exists(merged_folder):
         os.makedirs(merged_folder)
 
@@ -168,3 +169,16 @@ def get_flacs(src_dir):
         if ".flac" in x:
             list_of_flacs.append(x)
     return list_of_flacs
+
+
+def get_ascii_path(root_path):
+    path_unicode = root_path.decode('utf8')
+    ascii_path = unidecode(path_unicode)
+
+    return ascii_path
+
+
+def rename_file_tree(root_path):
+    for path, dirs, files in os.walk(root_path):
+        ascii_path = get_ascii_path(path)
+        os.rename(path, ascii_path)

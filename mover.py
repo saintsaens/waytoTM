@@ -74,6 +74,5 @@ for x in flac_dirs_lvl_0:
                             logging.debug("Copying image(s) into: " + z + ".")
                             utils.copy_images(y, z)
 
-
 logging.debug("Checking the number of files in new folder matches number of files in FLAC folder.")
 logging.debug("Deleting old folders.")

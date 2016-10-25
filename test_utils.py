@@ -12,13 +12,13 @@ TEST_PATH = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore"
 def test_get_direct_subdirs():
     src_folder = TEST_PATH + "/folder1"
     assert type(utils.get_direct_subdirs(TEST_PATH)) == list
-    assert len(utils.get_direct_subdirs(TEST_PATH)) == 3
+    assert len(utils.get_direct_subdirs(TEST_PATH)) == 4
     assert len(utils.get_direct_subdirs(src_folder, ["[320]", "[V0]", "[V2]"])) == 2
 
 
 def test_get_direct_elements():
     assert type(utils.get_direct_elements(TEST_PATH)) == list
-    assert len(utils.get_direct_elements(TEST_PATH)) == 4
+    assert len(utils.get_direct_elements(TEST_PATH)) == 5
 
 
 def test_get_list_of_mergeables():
@@ -89,3 +89,30 @@ def test_get_flac_list():
     src_folder = TEST_PATH + "/folder2"
     list_of_flacs = utils.get_flacs(src_folder)
     assert len(list_of_flacs) == 3
+
+
+def test_get_root_name():
+    test_path = "Users/àéèìíòù"
+    assert utils.get_ascii_path(test_path) == "Users/aeeiiou"
+
+
+def test_rename_file_tree():
+    # Create data structure.
+    test_path1 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for unicode/àéèìíòù"
+    test_doc1 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for unicode/àéèìíòù/àéèìíòùààà"
+    test_path11 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for unicode/àéèìíòù/àéèìíòùéé"
+    test_doc11 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for unicode/àéèìíòù/àéèìíòùéé/àéèìíòùàààèèèé"
+    test_path12 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for unicode/àéèìíòù/àéèìíòùèè"
+    if not os.path.exists(test_path1):
+        os.makedirs(test_path1)
+    open(test_doc1, 'a').close()
+    if not os.path.exists(test_path11):
+        os.makedirs(test_path11)
+    open(test_doc11, 'a').close()
+    if not os.path.exists(test_path12):
+        os.makedirs(test_path12)
+
+    utils.rename_file_tree(test_path1)
+    ascii_path1 = utils.get_ascii_path(test_path1)
+    assert os.path.exists(ascii_path1)
+    shutil.rmtree(ascii_path1)
