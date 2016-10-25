@@ -27,25 +27,22 @@ def test_get_list_of_mergeables():
     assert len(utils.get_list_of_mergeables(path_to_mergeables, mover.MP3_V0, dont_merge_me)) == 0
 
 
-def test_check_level_320_nok():
-    nok_path = TEST_PATH + "/folder1"
-    assert utils.check_level(nok_path, mover.MP3_320) == "NOK"
+def test_level_has_doublons_320():
+    true_path = TEST_PATH + "/folder1"
+    false_path = TEST_PATH + "/folder2"
+    assert utils.level_has_doublons(true_path, mover.MP3_320) is True
+    assert utils.level_has_doublons(false_path, mover.MP3_320) is False
 
 
-def test_check_level_320_ok():
-    ok_path = TEST_PATH + "/folder2"
-    assert utils.check_level(ok_path, mover.MP3_320) == "OK"
-
-
-def test_check_image_fail():
+def test_level_has_image_fail():
     path_to_fail = TEST_PATH + "/folder1"
-    assert utils.check_image(path_to_fail) is False
-    assert utils.check_image(TEST_PATH) is False
+    assert utils.level_has_image(path_to_fail) is False
+    assert utils.level_has_image(TEST_PATH) is False
 
 
-def test_check_image_success():
+def test_level_has_image_success():
     path_to_success = TEST_PATH + "/folder3"
-    assert utils.check_image(path_to_success) is True
+    assert utils.level_has_image(path_to_success) is True
 
 
 def test_copy_from_list():

@@ -5,16 +5,16 @@ import os
 import shutil
 
 
-# Return the list of directories (excluding files) directly under the directory root_dir_path.
 def get_direct_subdirs(root_dir_path):
+    """Return the list of directories (excluding files) directly under the directory root_dir_path."""
     # Get list of immediate subdirectories.
     list_of_subdirs = filter(os.path.isdir, [os.path.join(root_dir_path, f) for f in os.listdir(root_dir_path)])
 
     return list_of_subdirs
 
 
-# Return the list of directories and files directly under the directory root_dir_path.
 def get_direct_elements(root_dir_path):
+    """Return the list of directories and files directly under the directory root_dir_path."""
     # Get list of immediate elements.
     stub_list = os.listdir(root_dir_path)
 
@@ -29,6 +29,7 @@ def get_direct_elements(root_dir_path):
 
 
 def merge_folders(root_path, merging_criteria):
+    """Return a folder containing the files of all folders in root_path with merging_criteria in their name."""
     # Create destination folder for all files in the list of folders to squash.
     merged_folder = root_path + "/Merged " + merging_criteria
     if not os.path.exists(merged_folder):
@@ -47,6 +48,8 @@ def merge_folders(root_path, merging_criteria):
 
 
 def get_list_of_mergeables(root_path, merging_criteria, not_that_one):
+    """Return the list of folders in root_path with merging_criteria in their name,
+    except for folders with not_that_one in their name"""
     # Get list of folders with naming criteria.
     list_of_subdirs = get_direct_subdirs(root_path)
     dirs_to_merge = []
@@ -59,8 +62,8 @@ def get_list_of_mergeables(root_path, merging_criteria, not_that_one):
     return dirs_to_merge
 
 
-# Return NOK if level has no doublons, otherwise return OK.
-def check_level(root_path, check_criteria):
+def level_has_doublons(root_path, check_criteria):
+    """Return True if root_path has at least 2 folders with check_criteria in their names, and False otherwise."""
     # print "Checking level \"" + root_path + "\" for " + check_criteria + " occurences..."
     list_of_subdirs = get_direct_subdirs(root_path)
     list_to_check = []
@@ -70,14 +73,13 @@ def check_level(root_path, check_criteria):
     # print "Found " + str(len(list_to_check)) + "."
 
     if len(list_to_check) > 1:
-        return "NOK"
+        return True
     else:
-        return "OK"
+        return False
 
 
-# Given a folder, check if there is a file with ".jpg" or ".png" in it.
-# Return 1 if there is, and 0 otherwise.
-def check_image(root_path):
+def level_has_image(root_path):
+    """Return True if there is at least a file with ".jpg" or ".png" in root_path."""
     list_to_check = get_direct_elements(root_path)
     for x in list_to_check:
         if ".jpg" in x or ".png" in x:
@@ -86,6 +88,7 @@ def check_image(root_path):
 
 
 def copy_from_list(src_dirs_list, dst_dir):
+    """Copy the contents of each item in src_dirs_list into dst_dir."""
     for x in src_dirs_list:
         files_to_move = os.listdir(x)
         for y in files_to_move:
@@ -97,6 +100,7 @@ def copy_from_list(src_dirs_list, dst_dir):
 
 
 def copy_images(src_dir, dst_dir):
+    """Copy all files with \".jpg\" or \".png\" in src_dir into dst_dir."""
     list_to_check = os.listdir(src_dir)
 
     # Get list of all images in src directory.
