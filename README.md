@@ -1,6 +1,7 @@
 # waytoTM
 Merging all folders that were divided into separate artists when transcoding a lossless source from various artists.
 
+- 10/26: Transform all non-ASCII characters into ASCII characters (does not affect song metadata).
 - 10/25: Copy artwork from original folder to transcoded folders.
 - 10/24: Merge folders.
 
