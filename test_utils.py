@@ -89,3 +89,24 @@ def test_get_flac_list():
     src_folder = TEST_PATH + "/folder2"
     list_of_flacs = utils.get_flacs(src_folder)
     assert len(list_of_flacs) == 3
+
+
+def test_merge_folders():
+    test_path_a1 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging/album1"
+    test_path_a1b1 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging/album1/bla [320]"
+    test_path_a1b1d1 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging/album1/bla [320]/caca1.flac"
+    test_path_a1b2 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging/album1/blo [320]"
+    test_path_a1b2d1 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging/album1/blo [320]/caca2.flac"
+
+    if not os.path.exists(test_path_a1):
+        os.makedirs(test_path_a1)
+    if not os.path.exists(test_path_a1b1):
+        os.makedirs(test_path_a1b1)
+    if not os.path.exists(test_path_a1b2):
+        os.makedirs(test_path_a1b2)
+    open(test_path_a1b1d1, 'a').close()
+    open(test_path_a1b2d1, 'a').close()
+
+    merged_folder = utils.merge_folders(test_path_a1, "[320]")
+    assert os.path.exists(merged_folder)
+    shutil.rmtree(test_path_a1)
