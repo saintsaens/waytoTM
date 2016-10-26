@@ -55,8 +55,7 @@ Example of file tree structure:
 
 
 ## Final state
-General folder containing all albums in FLAC (unchanged).
-Ready-to-upload folder with:
+General folder containing all albums in FLAC (unchanged) AND a ready-to-upload folder with:
 - one merged folder for each [320], [V0] or [V2], with the artworks, even if album is divided into discs.
 - optionally one or several .jpg or .png artwork files
 ```
