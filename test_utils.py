@@ -89,34 +89,3 @@ def test_get_flac_list():
     src_folder = TEST_PATH + "/folder2"
     list_of_flacs = utils.get_flacs(src_folder)
     assert len(list_of_flacs) == 3
-
-
-def test_get_ascii_path():
-    test_path = "Users/àéèìíòù"
-    assert utils.get_ascii_path(test_path) == "Users/aeeiiou"
-
-
-def test_turn_directory_to_ascii():
-    # Create data structure.
-    test_path1 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for unicode/àéèìíòù"
-    test_doc1 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for unicode/àéèìíòù/àéèìíòùààà"
-    test_path11 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for unicode/àéèìíòù/àéèìíòùéé"
-    test_doc11 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for unicode/àéèìíòù/àéèìíòùéé/àéèìíòùàààèèèé"
-    if not os.path.exists(test_path1):
-        os.makedirs(test_path1)
-    open(test_doc1, 'a').close()
-    if not os.path.exists(test_path11):
-        os.makedirs(test_path11)
-    open(test_doc11, 'a').close()
-
-    utils.turn_directory_to_ascii(test_path1)
-    ascii_path1 = utils.get_ascii_path(test_path1)
-    ascii_doc1 = utils.get_ascii_path(test_doc1)
-    ascii_path11 = utils.get_ascii_path(test_path11)
-    ascii_doc11 = utils.get_ascii_path(test_doc11)
-    assert os.path.exists(ascii_path1)
-    assert os.path.exists(ascii_doc1)
-    assert os.path.exists(ascii_path11)
-    assert os.path.exists(ascii_doc11)
-    shutil.rmtree(test_path1)
-    shutil.rmtree(ascii_path1)

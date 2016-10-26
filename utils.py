@@ -3,7 +3,6 @@
 
 import os
 import shutil
-from unidecode import unidecode
 
 
 def get_direct_subdirs(root_dir_path, excluding_criteria=[]):
@@ -44,7 +43,7 @@ def get_direct_elements(root_dir_path):
     stub_list = os.listdir(root_dir_path)
 
     # Remove that ugly .DS_Store.
-    if stub_list.count(".DS_Store") > 0:
+    if ".DS_Store" in stub_list:
         stub_list.remove(".DS_Store")
 
     # Prepend the whole path of elements.
@@ -58,7 +57,7 @@ def merge_folders(root_path, merging_criteria):
     :rtype: path
     """
     # Create destination folder for all files in the list of folders to squash.
-    merged_folder = get_ascii_path(root_path) + "/Merged " + merging_criteria
+    merged_folder = root_path + "/Merged " + merging_criteria
     if not os.path.exists(merged_folder):
         os.makedirs(merged_folder)
 
@@ -68,6 +67,11 @@ def merge_folders(root_path, merging_criteria):
 
     # Move files in new folder.
     copy_from_list(dirs_to_merge, merged_folder)
+
+    # Rename merged folder.
+    # root_path_stub = os.path.basename(os.path.normpath(root_path))
+    # new_name_merged_folder = personal_constants.UPLOAD_FOLDER + "/" + root_path_stub + " " + merging_criteria
+    # os.rename(merged_folder, new_name_merged_folder)
 
     # Delete old folders.
 
@@ -169,44 +173,3 @@ def get_flacs(src_dir):
         if ".flac" in x:
             list_of_flacs.append(x)
     return list_of_flacs
-
-
-def get_ascii_path(root_path):
-    """
-    Transform input string into ASCII string.
-    :param root_path: string to ASCII-ize.
-    :return: ASCII-ized string.
-    """
-    path_unicode = root_path.decode('utf8')
-    ascii_path = unidecode(path_unicode)
-
-    return ascii_path
-
-
-def turn_directory_to_ascii(root_path):
-    """
-    Transform all non-ASCII characters in an entire directory.
-    :param root_path: directory to transform
-    :return:
-    """
-    for path, dirs, files in os.walk(root_path):
-
-        # Unicodize path.
-        ascii_path = get_ascii_path(path)
-        if not os.path.exists(ascii_path):
-            os.makedirs(ascii_path)
-
-        # Unicodize dirs.
-        for dirname in dirs:
-            dirname_path = os.path.join(ascii_path, dirname)
-            ascii_dirname_path = get_ascii_path(dirname_path)
-            if not os.path.exists(ascii_dirname_path):
-                os.makedirs(ascii_dirname_path)
-
-        # Unicodize files.
-        for filename in files:
-            src_filename_path = os.path.join(path, filename)
-            filename_path = os.path.join(ascii_path, filename)
-            ascii_filename_path = get_ascii_path(filename_path)
-            if not os.path.exists(ascii_filename_path):
-                shutil.copyfile(src_filename_path, ascii_filename_path)
