@@ -91,28 +91,32 @@ def test_get_flac_list():
     assert len(list_of_flacs) == 3
 
 
-def test_get_root_name():
+def test_get_ascii_path():
     test_path = "Users/àéèìíòù"
     assert utils.get_ascii_path(test_path) == "Users/aeeiiou"
 
 
-def test_rename_file_tree():
+def test_turn_directory_to_ascii():
     # Create data structure.
     test_path1 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for unicode/àéèìíòù"
     test_doc1 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for unicode/àéèìíòù/àéèìíòùààà"
     test_path11 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for unicode/àéèìíòù/àéèìíòùéé"
     test_doc11 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for unicode/àéèìíòù/àéèìíòùéé/àéèìíòùàààèèèé"
-    test_path12 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for unicode/àéèìíòù/àéèìíòùèè"
     if not os.path.exists(test_path1):
         os.makedirs(test_path1)
     open(test_doc1, 'a').close()
     if not os.path.exists(test_path11):
         os.makedirs(test_path11)
     open(test_doc11, 'a').close()
-    if not os.path.exists(test_path12):
-        os.makedirs(test_path12)
 
-    utils.rename_file_tree(test_path1)
+    utils.turn_directory_to_ascii(test_path1)
     ascii_path1 = utils.get_ascii_path(test_path1)
+    ascii_doc1 = utils.get_ascii_path(test_doc1)
+    ascii_path11 = utils.get_ascii_path(test_path11)
+    ascii_doc11 = utils.get_ascii_path(test_doc11)
     assert os.path.exists(ascii_path1)
+    assert os.path.exists(ascii_doc1)
+    assert os.path.exists(ascii_path11)
+    assert os.path.exists(ascii_doc11)
+    shutil.rmtree(test_path1)
     shutil.rmtree(ascii_path1)
