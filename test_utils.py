@@ -92,9 +92,9 @@ def test_get_flac_list():
 
 
 def test_merge_folders():
-    test_path_a1 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging/album1"
-    test_path_a1b1 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging/album1/bla [320]"
-    test_path_a1b2 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging/album1/blo [320]"
+    test_path_a1 = TEST_PATH + "/folder4 for merging/album1"
+    test_path_a1b1 = test_path_a1 + "/bla [320]"
+    test_path_a1b2 = test_path_a1 + "/blo [320]"
 
     if not os.path.exists(test_path_a1):
         os.makedirs(test_path_a1)
@@ -109,8 +109,8 @@ def test_merge_folders():
 
 
 def test_move_merged_single_level():
-    upload_folder = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder5 for uploading"
-    flac_folder = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging"
+    upload_folder = TEST_PATH + "/folder5 for uploading"
+    flac_folder = TEST_PATH + "/folder4 for merging"
     path_a1 = flac_folder + "/album1"
     path_a1b1 = flac_folder + "/album1/bla [320]"
     path_a1b2 = flac_folder + "/album1/blo [320]"
@@ -132,19 +132,19 @@ def test_move_merged_single_level():
 
 
 def test_move_merged_double_level():
-    upload_folder = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder5 for uploading"
-    flac_folder = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging"
+    upload_folder = TEST_PATH + "/folder5 for uploading"
+    flac_folder = TEST_PATH + "/folder4 for merging"
     path_a2 = flac_folder + "/album2"
-    path_a2d1 = flac_folder + "/album2/disc1"
-    path_a2d2 = flac_folder + "/album2/disc2"
-    path_a2d1b1 = flac_folder + "/album2/disc1/bla [320]"
-    path_a2d1b2 = flac_folder + "/album2/disc1/blo [320]"
-    path_a2d1m = flac_folder + "/album2/disc1/Merged [320]"
-    path_a2d1md = flac_folder + "/album2/disc1/Merged [320]/caca1.flac"
-    path_a2d2b1 = flac_folder + "/album2/disc2/bla [320]"
-    path_a2d2b2 = flac_folder + "/album2/disc2/blo [320]"
-    path_a2d2m = flac_folder + "/album2/disc2/Merged [320]"
-    path_a2d2md = flac_folder + "/album2/disc2/Merged [320]/caca2.flac"
+    path_a2d1 = path_a2 + "/disc1"
+    path_a2d1b1 = path_a2d1 + "/bla [320]"
+    path_a2d1b2 = path_a2d1 + "/blo [320]"
+    path_a2d1m = path_a2d1 + "/Merged [320]"
+    path_a2d1md = path_a2d1 + "/Merged [320]/caca1.flac"
+    path_a2d2 = path_a2 + "/disc2"
+    path_a2d2b1 = path_a2d2 + "/bla [320]"
+    path_a2d2b2 = path_a2d2 + "/blo [320]"
+    path_a2d2m = path_a2d2 + "/Merged [320]"
+    path_a2d2md = path_a2d2 + "/Merged [320]/caca2.flac"
 
     list_of_paths = [path_a2, path_a2d1, path_a2d2, path_a2d1b1, path_a2d1b2, path_a2d1m, path_a2d2b1, path_a2d2b2,
                      path_a2d2m]
