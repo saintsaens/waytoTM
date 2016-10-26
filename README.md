@@ -1,6 +1,7 @@
 # waytoTM
 Merging all folders that were divided into separate artists when transcoding a lossless source from various artists.
 
+- 10/27: Move all merged folders into single clean ready-to-upload folder.
 - 10/25: Copy artwork from original folder to transcoded folders.
 - 10/24: Merge folders.
 
@@ -54,11 +55,10 @@ Example of file tree structure:
 
 
 ## Final state
-General folder containing all albums in FLAC.
-In each album there will be:
-- all FLAC files (unchanged)
-- optionally one or several .jpg or .png artwork files (unchanged)
-- one merged folder for each [320], [V0] or [V2], with the artworks.
+General folder containing all albums in FLAC (unchanged).
+Ready-to-upload folder with:
+- one merged folder for each [320], [V0] or [V2], with the artworks, even if album is divided into discs.
+- optionally one or several .jpg or .png artwork files
 ```
 - FLACs
 [...] (same file tree structure as initial state)
