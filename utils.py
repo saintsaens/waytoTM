@@ -3,10 +3,11 @@
 
 import os
 import shutil
+import pytest
 
 
 def get_direct_subdirs(root_dir_path, excluding_criteria=[]):
-    """Return the list of directories (excluding files) directly under the directory root_dir_path, except
+    """Return the list of the paths of directories (excluding files) directly under the directory root_dir_path, except
     folders containing name_criteria.
 
     :rtype: list
@@ -173,3 +174,39 @@ def get_flacs(src_dir):
         if ".flac" in x:
             list_of_flacs.append(x)
     return list_of_flacs
+
+
+def move_merged_single_level(album_path, upload_folder, mp3_format):
+    """
+    Move and rename the merged folder into the upload folder.
+    :param album_path: path of the album where the merged folder is.
+    :param upload_folder: destination folder.
+    :param mp3_format: format type to append to the merged folder name.
+    :return:
+    """
+    album_path_stub = os.path.basename(os.path.normpath(album_path))
+    clean_merged_folder = upload_folder + "/" + album_path_stub + " " + mp3_format
+    list_of_dirs = get_direct_subdirs(album_path)
+    for x in list_of_dirs:
+        if "Merged" in x and not os.path.exists(clean_merged_folder):
+            shutil.copytree(x, clean_merged_folder)
+
+
+def move_merged_double_level(album_path, upload_folder_path, mp3_format):
+    album_path_stub = os.path.basename(os.path.normpath(album_path))
+
+    # Create renamed destination album folder.
+    clean_album_folder_path = upload_folder_path + "/" + album_path_stub + " " + mp3_format
+    if not os.path.exists(clean_album_folder_path):
+        os.makedirs(clean_album_folder_path)
+
+    list_of_discs = os.listdir(album_path)
+    for disc in list_of_discs:
+        disc_path = os.path.join(album_path, disc)
+        if os.path.isdir(disc_path):
+            clean_merged_folder_path = clean_album_folder_path + "/" + disc
+            list_of_dirs = os.listdir(disc_path)
+            for dirname in list_of_dirs:
+                if "Merged" in dirname and not os.path.exists(clean_merged_folder_path):
+                    dirname_path = album_path + "/" + disc + "/" + dirname
+                    shutil.copytree(dirname_path, clean_merged_folder_path)

@@ -12,13 +12,13 @@ TEST_PATH = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore"
 def test_get_direct_subdirs():
     src_folder = TEST_PATH + "/folder1"
     assert type(utils.get_direct_subdirs(TEST_PATH)) == list
-    assert len(utils.get_direct_subdirs(TEST_PATH)) == 4
+    assert len(utils.get_direct_subdirs(TEST_PATH)) == 5
     assert len(utils.get_direct_subdirs(src_folder, ["[320]", "[V0]", "[V2]"])) == 2
 
 
 def test_get_direct_elements():
     assert type(utils.get_direct_elements(TEST_PATH)) == list
-    assert len(utils.get_direct_elements(TEST_PATH)) == 5
+    assert len(utils.get_direct_elements(TEST_PATH)) == 6
 
 
 def test_get_list_of_mergeables():
@@ -94,9 +94,7 @@ def test_get_flac_list():
 def test_merge_folders():
     test_path_a1 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging/album1"
     test_path_a1b1 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging/album1/bla [320]"
-    test_path_a1b1d1 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging/album1/bla [320]/caca1.flac"
     test_path_a1b2 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging/album1/blo [320]"
-    test_path_a1b2d1 = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging/album1/blo [320]/caca2.flac"
 
     if not os.path.exists(test_path_a1):
         os.makedirs(test_path_a1)
@@ -104,9 +102,66 @@ def test_merge_folders():
         os.makedirs(test_path_a1b1)
     if not os.path.exists(test_path_a1b2):
         os.makedirs(test_path_a1b2)
-    open(test_path_a1b1d1, 'a').close()
-    open(test_path_a1b2d1, 'a').close()
 
     merged_folder = utils.merge_folders(test_path_a1, "[320]")
     assert os.path.exists(merged_folder)
     shutil.rmtree(test_path_a1)
+
+
+def test_move_merged_single_level():
+    upload_folder = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder5 for uploading"
+    flac_folder = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging"
+    path_a1 = flac_folder + "/album1"
+    path_a1b1 = flac_folder + "/album1/bla [320]"
+    path_a1b2 = flac_folder + "/album1/blo [320]"
+    path_a1m = flac_folder + "/album1/Merged [320]"
+    path_a1md = flac_folder + "/album1/Merged [320]/caca.flac"
+
+    list_of_paths = [path_a1, path_a1b1, path_a1b2, path_a1m]
+    for x in list_of_paths:
+        if not os.path.exists(x):
+            os.makedirs(x)
+    if not os.path.exists(path_a1md):
+        open(path_a1md, 'a').close()
+
+    utils.move_merged_single_level(path_a1, upload_folder, mover.MP3_320)
+    new_merged_folder = upload_folder + "/album1 [320]"
+    assert os.path.exists(new_merged_folder)
+    shutil.rmtree(path_a1)
+    shutil.rmtree(new_merged_folder)
+
+
+def test_move_merged_double_level():
+    upload_folder = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder5 for uploading"
+    flac_folder = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore/folder4 for merging"
+    path_a2 = flac_folder + "/album2"
+    path_a2d1 = flac_folder + "/album2/disc1"
+    path_a2d2 = flac_folder + "/album2/disc2"
+    path_a2d1b1 = flac_folder + "/album2/disc1/bla [320]"
+    path_a2d1b2 = flac_folder + "/album2/disc1/blo [320]"
+    path_a2d1m = flac_folder + "/album2/disc1/Merged [320]"
+    path_a2d1md = flac_folder + "/album2/disc1/Merged [320]/caca1.flac"
+    path_a2d2b1 = flac_folder + "/album2/disc2/bla [320]"
+    path_a2d2b2 = flac_folder + "/album2/disc2/blo [320]"
+    path_a2d2m = flac_folder + "/album2/disc2/Merged [320]"
+    path_a2d2md = flac_folder + "/album2/disc2/Merged [320]/caca2.flac"
+
+    list_of_paths = [path_a2, path_a2d1, path_a2d2, path_a2d1b1, path_a2d1b2, path_a2d1m, path_a2d2b1, path_a2d2b2,
+                     path_a2d2m]
+    for x in list_of_paths:
+        if not os.path.exists(x):
+            os.makedirs(x)
+    if not os.path.exists(path_a2d1md):
+        open(path_a2d1md, 'a').close()
+    if not os.path.exists(path_a2d2md):
+        open(path_a2d2md, 'a').close()
+
+    utils.move_merged_double_level(path_a2, upload_folder, mover.MP3_320)
+    new_merged_folder1 = upload_folder + "/album2 [320]"
+    new_merged_folder11 = upload_folder + "/album2 [320]/disc1"
+    new_merged_folder12 = upload_folder + "/album2 [320]/disc2"
+    assert os.path.exists(new_merged_folder1)
+    assert os.path.exists(new_merged_folder11)
+    assert os.path.exists(new_merged_folder12)
+    shutil.rmtree(path_a2)
+    shutil.rmtree(new_merged_folder1)

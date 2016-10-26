@@ -48,8 +48,8 @@ for x in flac_dirs_lvl_0:
         if utils.level_has_doublons(x, MP3_320) is True:
             merged_dir = utils.merge_folders(x, MP3_320)
             # Copy cover art into merged folder.
-            if utils.level_has_image(y):
-                utils.copy_images(y, merged_dir)
+            if utils.level_has_image(x):
+                utils.copy_images(x, merged_dir)
 
 logging.debug("Copying images into transcoded folders that did not need merging...")
 # Check if there is an image at each level, and copy the image into all folders of that level.
