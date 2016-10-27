@@ -2,59 +2,57 @@
 # -*- coding: utf-8 -*-
 
 import utils
-import mover
 import os
 import shutil
-
-TEST_PATH = "/Users/flavien/Workspace/waytoTM/tests/fakedatastore"
+import const
 
 
 def test_get_direct_subdirs():
-    src_folder = TEST_PATH + "/folder1"
-    assert type(utils.get_direct_subdirs(TEST_PATH)) == list
-    assert len(utils.get_direct_subdirs(TEST_PATH)) == 5
+    src_folder = const.TEST_PATH + "/folder1"
+    assert type(utils.get_direct_subdirs(const.TEST_PATH)) == list
+    assert len(utils.get_direct_subdirs(const.TEST_PATH)) == 5
     assert len(utils.get_direct_subdirs(src_folder, ["[320]", "[V0]", "[V2]"])) == 2
 
 
 def test_get_direct_elements():
-    assert type(utils.get_direct_elements(TEST_PATH)) == list
-    assert len(utils.get_direct_elements(TEST_PATH)) == 6
+    assert type(utils.get_direct_elements(const.TEST_PATH)) == list
+    assert len(utils.get_direct_elements(const.TEST_PATH)) == 6
 
 
 def test_get_list_of_mergeables():
-    path_to_mergeables = TEST_PATH + "/folder1"
+    path_to_mergeables = const.TEST_PATH + "/folder1"
     dont_merge_me = "dontmerge"
-    assert type(utils.get_list_of_mergeables(path_to_mergeables, mover.MP3_320, dont_merge_me)) == list
-    assert len(utils.get_list_of_mergeables(path_to_mergeables, mover.MP3_320, dont_merge_me)) == 2
-    assert len(utils.get_list_of_mergeables(path_to_mergeables, mover.MP3_V0, dont_merge_me)) == 0
+    assert type(utils.get_list_of_mergeables(path_to_mergeables, const.MP3_320, dont_merge_me)) == list
+    assert len(utils.get_list_of_mergeables(path_to_mergeables, const.MP3_320, dont_merge_me)) == 2
+    assert len(utils.get_list_of_mergeables(path_to_mergeables, const.MP3_V0, dont_merge_me)) == 0
 
 
 def test_level_has_doublons_320():
-    true_path = TEST_PATH + "/folder1"
-    false_path = TEST_PATH + "/folder2"
-    assert utils.level_has_doublons(true_path, mover.MP3_320) is True
-    assert utils.level_has_doublons(false_path, mover.MP3_320) is False
+    true_path = const.TEST_PATH + "/folder1"
+    false_path = const.TEST_PATH + "/folder2"
+    assert utils.level_has_doublons(true_path, const.MP3_320) is True
+    assert utils.level_has_doublons(false_path, const.MP3_320) is False
 
 
 def test_level_has_image_fail():
-    path_to_fail = TEST_PATH + "/folder1"
+    path_to_fail = const.TEST_PATH + "/folder1"
     assert utils.level_has_image(path_to_fail) is False
-    assert utils.level_has_image(TEST_PATH) is False
+    assert utils.level_has_image(const.TEST_PATH) is False
 
 
 def test_level_has_image_success():
-    path_to_success = TEST_PATH + "/folder3"
+    path_to_success = const.TEST_PATH + "/folder3"
     assert utils.level_has_image(path_to_success) is True
 
 
 def test_copy_from_list():
-    input_folder_1 = TEST_PATH + "/folder1/subfolder1.2 [320]"
-    input_folder_2 = TEST_PATH + "/folder1/subfolder1.3 [320]"
+    input_folder_1 = const.TEST_PATH + "/folder1/subfolder1.2 [320]"
+    input_folder_2 = const.TEST_PATH + "/folder1/subfolder1.3 [320]"
     input_list = [input_folder_1, input_folder_2]
     total_length = 0
     for x in input_list:
         total_length += len(utils.get_direct_elements(x))
-    dst_folder = TEST_PATH + "/folder3/Mergetest "
+    dst_folder = const.TEST_PATH + "/folder3/Mergetest "
     if not os.path.exists(dst_folder):
         os.makedirs(dst_folder)
     utils.copy_from_list(input_list, dst_folder)
@@ -63,8 +61,8 @@ def test_copy_from_list():
 
 
 def test_copy_images():
-    src_folder = TEST_PATH + "/folder3"
-    dst_folder = TEST_PATH + "/folder3/Mergetest "
+    src_folder = const.TEST_PATH + "/folder3"
+    dst_folder = const.TEST_PATH + "/folder3/Mergetest "
     if not os.path.exists(dst_folder):
         os.makedirs(dst_folder)
     utils.copy_images(src_folder, dst_folder)
@@ -86,13 +84,13 @@ def test_copy_images():
 
 
 def test_get_flac_list():
-    src_folder = TEST_PATH + "/folder2"
+    src_folder = const.TEST_PATH + "/folder2"
     list_of_flacs = utils.get_flacs(src_folder)
     assert len(list_of_flacs) == 3
 
 
 def test_merge_folders():
-    test_path_a1 = TEST_PATH + "/folder4 for merging/album1"
+    test_path_a1 = const.TEST_PATH + "/folder4 for merging/album1"
     test_path_a1b1 = test_path_a1 + "/bla [320]"
     test_path_a1b2 = test_path_a1 + "/blo [320]"
 
@@ -104,13 +102,14 @@ def test_merge_folders():
         os.makedirs(test_path_a1b2)
 
     merged_folder = utils.merge_folders(test_path_a1, "[320]")
+    print "Merged folder = " + merged_folder
     assert os.path.exists(merged_folder)
     shutil.rmtree(test_path_a1)
 
 
 def test_move_merged_single_level():
-    upload_folder = TEST_PATH + "/folder5 for uploading"
-    flac_folder = TEST_PATH + "/folder4 for merging"
+    upload_folder = const.TEST_PATH + "/folder5 for uploading"
+    flac_folder = const.TEST_PATH + "/folder4 for merging"
     path_a1 = flac_folder + "/album1"
     path_a1b1 = flac_folder + "/album1/bla [320]"
     path_a1b2 = flac_folder + "/album1/blo [320]"
@@ -124,7 +123,7 @@ def test_move_merged_single_level():
     if not os.path.exists(path_a1md):
         open(path_a1md, 'a').close()
 
-    utils.move_merged_single_level(path_a1, upload_folder, mover.MP3_320)
+    utils.move_merged_single_level(path_a1, upload_folder, const.MP3_320)
     new_merged_folder = upload_folder + "/album1 [320]"
     assert os.path.exists(new_merged_folder)
     shutil.rmtree(path_a1)
@@ -132,8 +131,9 @@ def test_move_merged_single_level():
 
 
 def test_move_merged_double_level():
-    upload_folder = TEST_PATH + "/folder5 for uploading"
-    flac_folder = TEST_PATH + "/folder4 for merging"
+    # Create all paths
+    upload_folder = const.TEST_PATH + "/folder5 for uploading"
+    flac_folder = const.TEST_PATH + "/folder4 for merging"
     path_a2 = flac_folder + "/album2"
     path_a2d1 = path_a2 + "/disc1"
     path_a2d1b1 = path_a2d1 + "/bla [320]"
@@ -146,6 +146,7 @@ def test_move_merged_double_level():
     path_a2d2m = path_a2d2 + "/Merged [320]"
     path_a2d2md = path_a2d2 + "/Merged [320]/caca2.flac"
 
+    # Create all files and folders with those paths.
     list_of_paths = [path_a2, path_a2d1, path_a2d2, path_a2d1b1, path_a2d1b2, path_a2d1m, path_a2d2b1, path_a2d2b2,
                      path_a2d2m]
     for x in list_of_paths:
@@ -156,7 +157,8 @@ def test_move_merged_double_level():
     if not os.path.exists(path_a2d2md):
         open(path_a2d2md, 'a').close()
 
-    utils.move_merged_double_level(path_a2, upload_folder, mover.MP3_320)
+    # Do the dragons, and assert for tests.
+    utils.move_merged_double_level(path_a2, upload_folder, const.MP3_320)
     new_merged_folder1 = upload_folder + "/album2 [320]"
     new_merged_folder11 = upload_folder + "/album2 [320]/disc1"
     new_merged_folder12 = upload_folder + "/album2 [320]/disc2"

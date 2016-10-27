@@ -61,13 +61,13 @@ def merge_folders(root_path, merging_criteria):
     :param merging_criteria: string triggering the merging.
     :return: path to the merged folder.
     """
+    wildcard = "Merged "
     # Create destination folder for all files in the list of folders to squash.
-    merged_folder = root_path + "/Merged " + merging_criteria
+    merged_folder = root_path + "/" + wildcard + merging_criteria
     if not os.path.exists(merged_folder):
         os.makedirs(merged_folder)
 
     # Get list of folders with merging criteria in their name.
-    wildcard = "Merged"
     dirs_to_merge = get_list_of_mergeables(root_path, merging_criteria, wildcard)
 
     # Move files in new folder.
