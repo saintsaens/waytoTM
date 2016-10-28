@@ -163,6 +163,26 @@ def copy_from_list(src_dirs_list, dst_dir):
                 shutil.copyfile(src_file_path, dst_file_path)
 
 
+def copy_images_in_album(album_path):
+    # Double level.
+    list_of_discpaths = get_direct_subdirs(album_path, [const.MP3_320])
+    if list_of_discpaths:
+        for x in list_of_discpaths:
+            if level_has_image(x):
+                list_of_dirs = get_direct_subdirs(x)
+                copy_images_to_list(x, list_of_dirs)
+
+    # Single level.
+    if level_has_image(album_path):
+        list_of_dirs = get_direct_subdirs(album_path)
+        copy_images_to_list(album_path, list_of_dirs)
+
+
+def copy_images_to_list(src_dir, list_of_dst_dir):
+    for x in list_of_dst_dir:
+        copy_images(src_dir, x)
+
+
 def copy_images(src_dir, dst_dir):
     """
     Copy all files with \".jpg\" or \".png\" in src_dir into dst_dir.

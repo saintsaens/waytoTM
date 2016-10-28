@@ -60,9 +60,73 @@ def test_copy_from_list():
     shutil.rmtree(dst_folder)
 
 
+def test_copy_images_to_list():
+    src_folder = const.TEST_PATH + "/folder3"
+    path_a6 = const.TEST_PATH + "/folder6 for copying"
+    path_a6b1 = path_a6 + "/bla [320]"
+    path_a6b2 = path_a6 + "/blo [320]"
+
+    list_of_paths = [path_a6, path_a6b1, path_a6b2]
+    for x in list_of_paths:
+        if not os.path.exists(x):
+            os.makedirs(x)
+
+    list_of_dst = [path_a6b1, path_a6b2]
+    utils.copy_images_to_list(src_folder, list_of_dst)
+    copied_image1 = path_a6b1 + "/art.png"
+    copied_image2 = path_a6b1 + "/cover.jpg"
+    copied_image3 = path_a6b1 + "/front.jpg"
+    copied_image4 = path_a6b2 + "/art.png"
+    copied_image5 = path_a6b2 + "/cover.jpg"
+    copied_image6 = path_a6b2 + "/front.jpg"
+    assert os.path.exists(copied_image1)
+    assert os.path.exists(copied_image2)
+    assert os.path.exists(copied_image3)
+    assert os.path.exists(copied_image4)
+    assert os.path.exists(copied_image5)
+    assert os.path.exists(copied_image6)
+    shutil.rmtree(path_a6)
+
+
+def test_copy_images_in_album_double():
+    src_folder = const.TEST_PATH + "/folder7 for images"
+    path_a2d1 = src_folder + "/disc1"
+    path_a2d1b1 = path_a2d1 + "/bla [320]"
+    path_a2d1b1d1 = path_a2d1 + "/art.png"
+    path_a2d1b1d2 = path_a2d1 + "/cover.jpg"
+    path_a2d1b1d3 = path_a2d1 + "/front.jpg"
+    path_a2d2 = src_folder + "/disc2"
+    path_a2d2b1 = path_a2d2 + "/bla [320]"
+
+    # Create all files and folders with those paths.
+    list_of_paths_dirs = [src_folder, path_a2d1, path_a2d2, path_a2d1b1, path_a2d2b1]
+    for x in list_of_paths_dirs:
+        if not os.path.exists(x):
+            os.makedirs(x)
+    list_of_paths_images = [path_a2d1b1d1, path_a2d1b1d2, path_a2d1b1d3]
+    for y in list_of_paths_images:
+        if not os.path.exists(y):
+            open(y, 'a').close()
+
+    utils.copy_images_in_album(src_folder)
+    copied_image1 = path_a2d1b1 + "/art.png"
+    copied_image2 = path_a2d1b1 + "/cover.jpg"
+    copied_image3 = path_a2d1b1 + "/front.jpg"
+    copied_image4 = path_a2d2b1 + "/art.png"
+    copied_image5 = path_a2d2b1 + "/cover.jpg"
+    copied_image6 = path_a2d2b1 + "/front.jpg"
+    assert os.path.exists(copied_image1)
+    assert os.path.exists(copied_image2)
+    assert os.path.exists(copied_image3)
+    assert not os.path.exists(copied_image4)
+    assert not os.path.exists(copied_image5)
+    assert not os.path.exists(copied_image6)
+    shutil.rmtree(src_folder)
+
+
 def test_copy_images():
     src_folder = const.TEST_PATH + "/folder3"
-    dst_folder = const.TEST_PATH + "/folder3/Mergetest "
+    dst_folder = src_folder + "/Mergetest "
     if not os.path.exists(dst_folder):
         os.makedirs(dst_folder)
     utils.copy_images(src_folder, dst_folder)
@@ -90,7 +154,8 @@ def test_get_flac_list():
 
 
 def test_merge_album_double():
-    path_a2 = const.TEST_PATH + "/folder4 for merging/album2"
+    path_a6 = const.TEST_PATH + "/folder6 for merging"
+    path_a2 = path_a6 + "/album2"
     path_a2d1 = path_a2 + "/disc1"
     path_a2d1b1 = path_a2d1 + "/bla [320]"
     path_a2d1b2 = path_a2d1 + "/blo [320]"
@@ -98,7 +163,7 @@ def test_merge_album_double():
     path_a2d2b1 = path_a2d2 + "/bla [320]"
     path_a2d2b2 = path_a2d2 + "/blo [320]"
 
-    list_of_paths = [path_a2, path_a2d1, path_a2d1b1, path_a2d1b2, path_a2d2, path_a2d2b1, path_a2d2b2]
+    list_of_paths = [path_a6, path_a2, path_a2d1, path_a2d1b1, path_a2d1b2, path_a2d2, path_a2d2b1, path_a2d2b2]
     for x in list_of_paths:
         if not os.path.exists(x):
             os.makedirs(x)
@@ -108,7 +173,7 @@ def test_merge_album_double():
     utils.merge_album(path_a2, const.MP3_320)
     assert os.path.exists(merged_folder1)
     assert os.path.exists(merged_folder2)
-#    shutil.rmtree(path_a2)
+    shutil.rmtree(path_a6)
 
 
 def test_merge_folders():
@@ -168,7 +233,7 @@ def test_move_merged_double_level():
     path_a2d2md = path_a2d2 + "/Merged [320]/caca2.flac"
 
     # Create all files and folders with those paths.
-    list_of_paths = [path_a2, path_a2d1, path_a2d2, path_a2d1b1, path_a2d1b2, path_a2d1m, path_a2d2b1, path_a2d2b2,
+    list_of_paths = [path_a2, path_a2d1, path_a2d2, path_a2d1b1, path_a2d1b2, path_a2d2b1, path_a2d2b2, path_a2d1m,
                      path_a2d2m]
     for x in list_of_paths:
         if not os.path.exists(x):
