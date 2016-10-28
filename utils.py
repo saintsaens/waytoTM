@@ -3,6 +3,7 @@
 
 import os
 import shutil
+import const
 
 
 def get_direct_subdirs(root_dir_path, excluding_criteria=[]):
@@ -54,6 +55,21 @@ def get_direct_elements(root_dir_path):
     return list_of_elements
 
 
+def merge_album(album_path, merging_criteria):
+    # Double level.
+    list_of_discpaths = get_direct_subdirs(album_path, [const.MP3_320])
+    if list_of_discpaths:
+        for x in list_of_discpaths:
+            merged_folder = merge_folders(x, merging_criteria)
+            # Copy cover art into merged folder.
+            if level_has_image(x):
+                copy_images(x, merged_folder)
+
+    # Single level.
+    else:
+        merge_folders(album_path, merging_criteria)
+
+
 def merge_folders(root_path, merging_criteria):
     """
     Create a merged folder, containing the files of all folders in root_path with merging_criteria in their name.
@@ -61,7 +77,7 @@ def merge_folders(root_path, merging_criteria):
     :param merging_criteria: string triggering the merging.
     :return: path to the merged folder.
     """
-    wildcard = "Merged "
+    wildcard = const.MERGED_FOLDER_NAME + " "
     # Create destination folder for all files in the list of folders to squash.
     merged_folder = root_path + "/" + wildcard + merging_criteria
     if not os.path.exists(merged_folder):
@@ -109,7 +125,6 @@ def level_has_doublons(root_path, check_criteria):
     for x in list_of_subdirs:
         if check_criteria in x:
             list_to_check.append(x)
-    # print "Found " + str(len(list_to_check)) + "."
 
     if len(list_to_check) > 1:
         return True
@@ -195,11 +210,11 @@ def move_merged_single_level(album_path, upload_folder_path, mp3_format):
     :return: nothing.
     """
     album_path_stub = os.path.basename(os.path.normpath(album_path))
-    clean_merged_folder = upload_folder_path + "/" + album_path_stub + " " + mp3_format
-    list_of_dirs = get_direct_subdirs(album_path)
-    for x in list_of_dirs:
-        if "Merged" in x and not os.path.exists(clean_merged_folder):
-            shutil.copytree(x, clean_merged_folder)
+    clean_merged_folder_path = upload_folder_path + "/" + album_path_stub + " " + mp3_format
+
+    merged_folder_path = get_merged_folder_path(album_path)
+    if merged_folder_path and not os.path.exists(clean_merged_folder_path):
+        shutil.copytree(merged_folder_path, clean_merged_folder_path)
 
 
 def move_merged_double_level(album_path, upload_folder_path, mp3_format):
@@ -207,7 +222,7 @@ def move_merged_double_level(album_path, upload_folder_path, mp3_format):
     Move and rename the merged folders into the upload folder, when album is devided into discs (additional folder
     level).
     :param album_path: path of the album where the merged folders are.
-    :param upload_folder: destination folder.
+    :param upload_folder_path: destination folder path.
     :param mp3_format: format type to append to the appropriate folders.
     :return: nothing.
     """
@@ -218,13 +233,55 @@ def move_merged_double_level(album_path, upload_folder_path, mp3_format):
     if not os.path.exists(clean_album_folder_path):
         os.makedirs(clean_album_folder_path)
 
-    list_of_discs = os.listdir(album_path)
-    for disc in list_of_discs:
-        disc_path = os.path.join(album_path, disc)
+    list_of_discpaths = get_direct_subdirs(album_path)
+    for disc_path in list_of_discpaths:
+        disc_path_stub = os.path.basename(os.path.normpath(disc_path))
         if os.path.isdir(disc_path):
-            clean_merged_folder_path = clean_album_folder_path + "/" + disc
-            list_of_dirs = os.listdir(disc_path)
-            for dirname in list_of_dirs:
-                if "Merged" in dirname and not os.path.exists(clean_merged_folder_path):
-                    dirname_path = album_path + "/" + disc + "/" + dirname
-                    shutil.copytree(dirname_path, clean_merged_folder_path)
+            clean_merged_folder_path = clean_album_folder_path + "/" + disc_path_stub
+            dirname_path = get_merged_folder_path(disc_path)
+            if dirname_path and not os.path.exists(clean_merged_folder_path):
+                shutil.copytree(dirname_path, clean_merged_folder_path)
+
+
+def get_merged_folder_path(dir_path, merged_pattern=const.MERGED_FOLDER_NAME):
+    """
+    Get the full path of the merged folder in the specified directory.
+    :param merged_pattern: string to look for when listing all directories.
+    :return: path to the merged folder.
+    """
+    list_of_dirpaths = get_direct_subdirs(dir_path)
+    for dirname_path in list_of_dirpaths:
+        if merged_pattern in dirname_path:
+            return dirname_path
+    return ""
+
+
+def album_is_clean(album_path, check_criteria):
+    """
+    Determine if album is clean, by checking the number of occurences
+    :param album_path:
+    :param check_criteria:
+    :return:
+    """
+
+    # Double level.
+    list_of_discpaths = get_direct_subdirs(album_path, [const.MP3_320])
+    if list_of_discpaths:
+        for x in list_of_discpaths:
+            if not folder_is_clean(x, check_criteria):
+                return False
+        return True
+
+    # Single level.
+    return folder_is_clean(album_path, check_criteria)
+
+
+def folder_is_clean(dir_path, check_criteria):
+    list_of_doublons = []
+    list_of_dirpaths = get_direct_subdirs(dir_path)
+    for x in list_of_dirpaths:
+        if check_criteria in x:
+            list_of_doublons.append(x)
+    if len(list_of_doublons) > 1:
+        return False
+    return True
