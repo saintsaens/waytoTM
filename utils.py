@@ -266,6 +266,7 @@ def move_merged_double_level(album_path, upload_folder_path, mp3_format):
 def get_merged_folder_path(dir_path, merged_pattern=const.MERGED_FOLDER_NAME):
     """
     Get the full path of the merged folder in the specified directory.
+    :param dir_path: path to the directory where the merged folder is.
     :param merged_pattern: string to look for when listing all directories.
     :return: path to the merged folder.
     """

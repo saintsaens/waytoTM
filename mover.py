@@ -25,37 +25,13 @@ if __name__ == '__main__':
     dirty_albums = []
     clean_albums = []
     for x in flac_dirs_lvl_0:
-        if utils.album_is_clean(x):
+        if utils.album_is_clean(x, const.MP3_320):
             clean_albums.append(x)
         else:
             dirty_albums.append(x)
 
-    for x in flac_dirs_lvl_0:
-        logging.debug("Looking at " + x + "...")
-        logging.debug("Checking if there is another level...")
-        if utils.get_direct_subdirs(x, const.MP3_FORMATS):
-            # There is another level, so dance once again: get all subdirs in the current subdir of FLAC_FOLDER (level 1).
-            flac_dirs_lvl_1 = utils.get_direct_subdirs(x, const.MP3_FORMATS)
-            logging.debug("Yes: " + str(flac_dirs_lvl_1))
-            for y in flac_dirs_lvl_1:
-                logging.debug("Looking at " + y + "...")
-                # Check if there are at least 2 directories with 320 at lvl 2, and merge them.
-                if utils.level_has_doublons(y, const.MP3_320) is True:
-                    merged_dir = utils.merge_folders(y, const.MP3_320)
-                    # Copy cover art into merged folder.
-                    if utils.level_has_image(y):
-                        utils.copy_images(y, merged_dir)
-
-        else:
-            # Level 1 is the deepest.
-            # Check if there are at least 2 directories with 320 at lvl 1, and merge them.
-            if utils.level_has_doublons(x, const.MP3_320) is True:
-                merged_dir = utils.merge_folders(x, const.MP3_320)
-                # Copy cover art into merged folder.
-                if utils.level_has_image(x):
-                    utils.copy_images(x, merged_dir)
-
-    logging.debug("Checking the number of files in new folder matches number of files in FLAC folder.")
+    for dirty_album in dirty_albums:
+        utils.merge_album(dirty_album, const.MP3_320)
 
 # ================================= PART 2: COPYING IMAGES ================================
     logging.debug("Copying images into transcoded folders that did not need merging...")
