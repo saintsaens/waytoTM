@@ -57,7 +57,7 @@ def get_direct_elements(root_dir_path):
 
 def merge_album(album_path, merging_criteria):
     # Double level.
-    list_of_discpaths = get_direct_subdirs(album_path, [const.MP3_320])
+    list_of_discpaths = get_direct_subdirs(album_path, const.MP3_FORMATS)
     if list_of_discpaths:
         for x in list_of_discpaths:
             merge_folders(x, merging_criteria)
@@ -273,7 +273,7 @@ def get_merged_folder_path(dir_path, merged_pattern=const.MERGED_FOLDER_NAME):
     return ""
 
 
-def copy_clean_single_level(album_path, upload_folder_path=const.UPLOAD_DIR, pattern=const.MP3_320):
+def copy_clean_single_level(album_path, pattern, upload_folder_path=const.UPLOAD_DIR):
     """
     In a given album without discs, copy all folders with pattern in their name into an upload folder.
     :param album_path: path of the album where the transcoded folders are.
@@ -290,7 +290,7 @@ def copy_clean_single_level(album_path, upload_folder_path=const.UPLOAD_DIR, pat
                 shutil.copytree(dirname_path, dirname_new_path)
 
 
-def copy_clean_double_level(album_path, upload_folder_path=const.UPLOAD_DIR, pattern=const.MP3_320):
+def copy_clean_double_level(album_path, pattern, upload_folder_path=const.UPLOAD_DIR):
     """
     In a given album with discs, copy all folders with pattern in their name into an upload folder.
     :param album_path: path of the album where the transcoded folders are.
@@ -305,13 +305,15 @@ def copy_clean_double_level(album_path, upload_folder_path=const.UPLOAD_DIR, pat
     if not os.path.exists(clean_album_folder_path):
         os.makedirs(clean_album_folder_path)
 
+    #
     list_of_discpaths = get_direct_subdirs(album_path)
     for disc_path in list_of_discpaths:
+        disc_path_stub = os.path.basename(os.path.normpath(disc_path))
         dirs_to_upload = get_direct_subdirs(disc_path)
         for dirname_path in dirs_to_upload:
             if pattern in dirname_path:
                 dirname_path_stub = os.path.basename(os.path.normpath(dirname_path))
-                dirname_new_path = clean_album_folder_path + "/" + dirname_path_stub
+                dirname_new_path = clean_album_folder_path + "/" + disc_path_stub + "/" + dirname_path_stub
                 if dirname_path and not os.path.exists(dirname_new_path):
                     shutil.copytree(dirname_path, dirname_new_path)
 
