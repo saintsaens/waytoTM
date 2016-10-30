@@ -162,7 +162,7 @@ def copy_from_list(src_dirs_list, dst_dir):
 
 def copy_images_in_album(album_path):
     # Double level.
-    list_of_discpaths = get_direct_subdirs(album_path, [const.MP3_320])
+    list_of_discpaths = get_direct_subdirs(album_path, const.MP3_FORMATS)
     if list_of_discpaths:
         for x in list_of_discpaths:
             if level_has_image(x):
@@ -218,23 +218,23 @@ def get_flacs(src_dir):
     return list_of_flacs
 
 
-def copy_merged_single_level(album_path, upload_folder_path=const.UPLOAD_DIR, mp3_format=const.MP3_320):
+def copy_merged_single_level(album_path, pattern, upload_folder_path=const.UPLOAD_DIR):
     """
     Copy and rename the merged folder into the upload folder.
     :param album_path: path of the album where the merged folder is.
     :param upload_folder_path: path of the destination folder.
-    :param mp3_format: format type to append to the merged folder name.
+    :param pattern: format type to append to the merged folder name.
     :return: nothing.
     """
     album_path_stub = os.path.basename(os.path.normpath(album_path))
-    clean_merged_folder_path = upload_folder_path + "/" + album_path_stub + " " + mp3_format
+    clean_merged_folder_path = upload_folder_path + "/" + album_path_stub + " " + pattern
 
     merged_folder_path = get_merged_folder_path(album_path)
     if merged_folder_path and not os.path.exists(clean_merged_folder_path):
         shutil.copytree(merged_folder_path, clean_merged_folder_path)
 
 
-def copy_merged_double_level(album_path, upload_folder_path=const.UPLOAD_DIR, mp3_format=const.MP3_320):
+def copy_merged_double_level(album_path, mp3_format, upload_folder_path=const.UPLOAD_DIR):
     """
     Copy and rename the merged folders into the upload folder, when album is divided into discs (additional folder
     level).
@@ -246,17 +246,18 @@ def copy_merged_double_level(album_path, upload_folder_path=const.UPLOAD_DIR, mp
     album_path_stub = os.path.basename(os.path.normpath(album_path))
 
     # Create renamed destination album folder.
-    clean_album_folder_path = upload_folder_path + "/" + album_path_stub + " " + mp3_format
-    if not os.path.exists(clean_album_folder_path):
-        os.makedirs(clean_album_folder_path)
+    dst_album_path = upload_folder_path + "/" + album_path_stub + " " + mp3_format
+    if not os.path.exists(dst_album_path):
+        os.makedirs(dst_album_path)
 
-    list_of_discpaths = get_direct_subdirs(album_path)
-    for disc_path in list_of_discpaths:
+    list_of_disc_paths = get_direct_subdirs(album_path)
+    for disc_path in list_of_disc_paths:
         disc_path_stub = os.path.basename(os.path.normpath(disc_path))
-        clean_merged_folder_path = clean_album_folder_path + "/" + disc_path_stub
-        dirname_path = get_merged_folder_path(disc_path)
-        if dirname_path and not os.path.exists(clean_merged_folder_path):
-            shutil.copytree(dirname_path, clean_merged_folder_path)
+        dst_disc_path = dst_album_path + "/" + disc_path_stub
+        merged_folder_pattern = const.MERGED_FOLDER_NAME + " " + mp3_format
+        merged_folder_path = get_merged_folder_path(disc_path, merged_folder_pattern)
+        if merged_folder_path and not os.path.exists(dst_disc_path):
+            shutil.copytree(merged_folder_path, dst_disc_path)
 
 
 def get_merged_folder_path(dir_path, merged_pattern=const.MERGED_FOLDER_NAME):
@@ -352,3 +353,38 @@ def folder_is_clean(dir_path, check_criteria):
     if len(list_of_doublons) > 1:
         return False
     return True
+
+
+def folder_has_formats(dir_path):
+    """
+    Check the available transcoded formats in a direct folder.
+    :param dir_path: path to the folder where we look at the transcoded subfolders.
+    :return: list of transcoded formats.
+    """
+    list_of_formats = []
+    list_of_dirs = get_direct_subdirs(dir_path)
+    for x in list_of_dirs:
+        # This is horrible algorithm-wise, but does the job because there's only 3 of them.
+        if const.MP3_320 in x:
+            if x not in list_of_formats:
+                list_of_formats.append(const.MP3_320)
+        if const.MP3_V0 in x:
+            if x not in list_of_formats:
+                list_of_formats.append(const.MP3_V0)
+        if const.MP3_V2 in x:
+            if x not in list_of_formats:
+                list_of_formats.append(const.MP3_V2)
+
+    return list_of_formats
+
+
+def album_has_formats(album_path):
+    # Double level.
+    list_of_discpaths = get_direct_subdirs(album_path, const.MP3_FORMATS)
+    if list_of_discpaths:
+        for x in list_of_discpaths:
+            return folder_has_formats(x)
+
+    # Single level.
+    else:
+        return folder_has_formats(album_path)

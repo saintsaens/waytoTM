@@ -382,6 +382,10 @@ def test_copy_merged_single_level():
         new_path1 = path_a1 + "/bla " + x
         new_path2 = path_a1 + "/blo " + x
         new_path3 = path_a1 + "/Merged " + x
+        if x is const.MP3_320:
+            new_path31 = new_path3 + "/leia320.mp3"
+        if x is const.MP3_V0:
+            new_path31 = new_path3 + "/leiaV0.mp3"
         list_of_paths.append(new_path1)
         list_of_paths.append(new_path2)
         list_of_paths.append(new_path3)
@@ -389,10 +393,17 @@ def test_copy_merged_single_level():
         for y in list_of_paths:
             if not os.path.exists(y):
                 os.makedirs(y)
+        if x is const.MP3_320 or x is const.MP3_V0:
+            if not os.path.exists(new_path31):
+                open(new_path31, 'a').close()
+            if not os.path.exists(new_path31):
+                open(new_path31, 'a').close()
 
-        utils.copy_merged_single_level(path_a1, upload_folder, x)
-        new_merged_folder = upload_folder + "/album1 " + x
-        assert os.path.exists(new_merged_folder)
+        utils.copy_merged_single_level(path_a1, x, upload_folder)
+    new_merged_file1 = upload_folder + "/album1 [320]/leia320.mp3"
+    new_merged_file2 = upload_folder + "/album1 [V0]/leia320.mp3"
+    assert os.path.exists(new_merged_file1)
+    assert os.path.exists(new_merged_file2)
 
     shutil.rmtree(upload_folder)
     shutil.rmtree(flac_folder)
@@ -413,9 +424,17 @@ def test_copy_merged_double_level():
         new_path11 = new_path1 + "/bla " + x
         new_path12 = new_path1 + "/blo " + x
         new_path13 = new_path1 + "/Merged " + x
+        if x is const.MP3_320:
+            new_path131 = new_path13 + "/leia320.mp3"
+        if x is const.MP3_V0:
+            new_path131 = new_path13 + "/leiaV0.mp3"
         new_path21 = new_path2 + "/bla " + x
         new_path22 = new_path2 + "/blo " + x
         new_path23 = new_path2 + "/Merged " + x
+        if x is const.MP3_320:
+            new_path231 = new_path23 + "/luke320.mp3"
+        if x is const.MP3_V0:
+            new_path231 = new_path23 + "/lukeV0.mp3"
         list_of_paths.append(new_path11)
         list_of_paths.append(new_path12)
         list_of_paths.append(new_path13)
@@ -426,17 +445,24 @@ def test_copy_merged_double_level():
         for y in list_of_paths:
             if not os.path.exists(y):
                 os.makedirs(y)
+        if x is const.MP3_320 or x is const.MP3_V0:
+            if not os.path.exists(new_path131):
+                open(new_path131, 'a').close()
+            if not os.path.exists(new_path231):
+                open(new_path231, 'a').close()
 
-        utils.copy_merged_double_level(path_a1, upload_folder, x)
-        new_merged_folder1 = upload_folder + "/album1 " + x
-        new_merged_folder11 = upload_folder + "/album1 " + x + "/disc1"
-        new_merged_folder12 = upload_folder + "/album1 " + x + "/disc2"
-        assert os.path.exists(new_merged_folder1)
-        assert os.path.exists(new_merged_folder11)
-        assert os.path.exists(new_merged_folder12)
+        utils.copy_merged_double_level(path_a1, x, upload_folder)
+    new_merged_file1 = upload_folder + "/album1 [320]/disc1/leia320.mp3"
+    new_merged_file2 = upload_folder + "/album1 [320]/disc2/luke320.mp3"
+    new_merged_file3 = upload_folder + "/album1 [V0]/disc1/leiaV0.mp3"
+    new_merged_file4 = upload_folder + "/album1 [V0]/disc2/lukeV0.mp3"
+    assert os.path.exists(new_merged_file1)
+    assert os.path.exists(new_merged_file2)
+    assert os.path.exists(new_merged_file3)
+    assert os.path.exists(new_merged_file4)
 
-    # shutil.rmtree(upload_folder)
-    # shutil.rmtree(flac_folder)
+    shutil.rmtree(upload_folder)
+    shutil.rmtree(flac_folder)
 
 
 def test_copy_clean_single_level():
@@ -782,4 +808,114 @@ def test_album_is_clean_double_true():
             os.makedirs(y)
 
     assert utils.album_is_clean(path_a2, const.MP3_FORMATS) is True
+    shutil.rmtree(path_a)
+
+
+def test_folder_has_formats_320():
+    path_a = const.TEST_PATH + "/folder4"
+    path_a2 = path_a + "/album2"
+    path_a2d1 = path_a2 + "/bla [320]"
+
+    if not os.path.exists(path_a2d1):
+        os.makedirs(path_a2d1)
+
+    assert utils.folder_has_formats(path_a2) == [const.MP3_320]
+    shutil.rmtree(path_a)
+
+
+def test_folder_has_formats_320_v0():
+    path_a = const.TEST_PATH + "/folder4"
+    path_a2 = path_a + "/album2"
+    path_a2d1 = path_a2 + "/bla [320]"
+    path_a2d2 = path_a2 + "/bla [V0]"
+
+    if not os.path.exists(path_a2d1):
+        os.makedirs(path_a2d1)
+    if not os.path.exists(path_a2d2):
+        os.makedirs(path_a2d2)
+
+    assert utils.folder_has_formats(path_a2) == [const.MP3_320, const.MP3_V0]
+    shutil.rmtree(path_a)
+
+
+def test_folder_has_formats_320_v0_v2():
+    path_a = const.TEST_PATH + "/folder4"
+    path_a2 = path_a + "/album2"
+    path_a2d1 = path_a2 + "/bla [320]"
+    path_a2d2 = path_a2 + "/bla [V0]"
+    path_a2d3 = path_a2 + "/bla [V2]"
+
+    if not os.path.exists(path_a2d1):
+        os.makedirs(path_a2d1)
+    if not os.path.exists(path_a2d2):
+        os.makedirs(path_a2d2)
+    if not os.path.exists(path_a2d3):
+        os.makedirs(path_a2d3)
+
+    assert utils.folder_has_formats(path_a2) == const.MP3_FORMATS
+    shutil.rmtree(path_a)
+
+
+def test_album_has_formats_double_320():
+    path_a = const.TEST_PATH + "/folder4"
+    path_a2 = path_a + "/album1"
+    path_a2d1 = path_a2 + "/disc1"
+    path_a2d2 = path_a2 + "/disc2"
+
+    list_of_dirs = []
+    dir1 = path_a2d1 + "/bla " + const.MP3_320
+    list_of_dirs.append(dir1)
+    dir2 = path_a2d2 + "/bla " + const.MP3_320
+    list_of_dirs.append(dir2)
+
+    for y in list_of_dirs:
+        if not os.path.exists(y):
+            os.makedirs(y)
+
+    assert utils.album_has_formats(path_a2) == [const.MP3_320]
+    shutil.rmtree(path_a)
+
+
+def test_album_has_formats_double_320_v0():
+    path_a = const.TEST_PATH + "/folder4"
+    path_a2 = path_a + "/album1"
+    path_a2d1 = path_a2 + "/disc1"
+    path_a2d2 = path_a2 + "/disc2"
+
+    list_of_dirs = []
+    dir1 = path_a2d1 + "/bla " + const.MP3_320
+    list_of_dirs.append(dir1)
+    dir2 = path_a2d1 + "/bla " + const.MP3_V0
+    list_of_dirs.append(dir2)
+    dir3 = path_a2d2 + "/bla " + const.MP3_320
+    list_of_dirs.append(dir3)
+    dir4 = path_a2d2 + "/bla " + const.MP3_V0
+    list_of_dirs.append(dir4)
+
+    for y in list_of_dirs:
+        if not os.path.exists(y):
+            os.makedirs(y)
+
+    assert utils.album_has_formats(path_a2) == [const.MP3_320, const.MP3_V0]
+    shutil.rmtree(path_a)
+
+
+def test_album_has_formats_double_320_v0_v2():
+    path_a = const.TEST_PATH + "/folder4"
+    path_a2 = path_a + "/album2"
+    path_a2d1 = path_a2 + "/disc1"
+    path_a2d2 = path_a2 + "/disc2"
+
+    list_of_dirs = []
+    for x in const.MP3_FORMATS:
+        dir1 = path_a2d1 + "/bla " + x
+        list_of_dirs.append(dir1)
+        dir2 = path_a2d2 + "/bla " + x
+        list_of_dirs.append(dir2)
+
+    for y in list_of_dirs:
+        if not os.path.exists(y):
+            os.makedirs(y)
+
+    assert utils.album_has_formats(path_a2) == const.MP3_FORMATS
     shutil.rmtree(path_a)
