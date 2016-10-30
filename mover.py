@@ -43,15 +43,19 @@ if __name__ == '__main__':
 
 # ==================== PART 3: MOVING FOLDERS INTO UPLOAD FOLDER ===================
     for album in dirty_albums:
+        list_of_transcoded_formats = utils.album_has_formats(album)
         if utils.get_direct_subdirs(album, const.MP3_FORMATS):
-            for x in const.MP3_FORMATS:
+            for x in list_of_transcoded_formats:
                 utils.copy_merged_double_level(album, x)
         else:
-            for x in const.MP3_FORMATS:
+            for x in list_of_transcoded_formats:
                 utils.copy_merged_single_level(album, x)
 
     for album in clean_albums:
+        list_of_transcoded_formats = utils.album_has_formats(album)
         if utils.get_direct_subdirs(album, const.MP3_FORMATS):
-            utils.copy_clean_double_level(album, x)
+            for x in list_of_transcoded_formats:
+                utils.copy_clean_double_level(album, x)
         else:
-            utils.copy_clean_single_level(album, x)
+            for x in list_of_transcoded_formats:
+                utils.copy_clean_single_level(album, x)

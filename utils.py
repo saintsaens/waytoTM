@@ -6,6 +6,7 @@ import shutil
 import const
 
 
+# ======================================= GETTERS =======================================
 def get_direct_subdirs(root_dir_path, excluding_criteria=[]):
     """Return the list of the paths of directories (excluding files) directly under the directory root_dir_path, except
     folders containing name_criteria.
@@ -55,40 +56,6 @@ def get_direct_elements(root_dir_path):
     return list_of_elements
 
 
-def merge_album(album_path, merging_criteria):
-    # Double level.
-    list_of_discpaths = get_direct_subdirs(album_path, const.MP3_FORMATS)
-    if list_of_discpaths:
-        for x in list_of_discpaths:
-            merge_folders(x, merging_criteria)
-
-    # Single level.
-    else:
-        merge_folders(album_path, merging_criteria)
-
-
-def merge_folders(root_path, merging_criteria):
-    """
-    Create a merged folder, containing the files of all folders in root_path with merging_criteria in their name.
-    :param root_path: folder containing all folders to be merged.
-    :param merging_criteria: string triggering the merging.
-    :return: path to the merged folder.
-    """
-    wildcard = const.MERGED_FOLDER_NAME + " "
-    # Create destination folder for all files in the list of folders to squash.
-    merged_folder = root_path + "/" + wildcard + merging_criteria
-    if not os.path.exists(merged_folder):
-        os.makedirs(merged_folder)
-
-    # Get list of folders with merging criteria in their name.
-    dirs_to_merge = get_list_of_mergeables(root_path, merging_criteria, wildcard)
-
-    # Move files in new folder.
-    copy_from_list(dirs_to_merge, merged_folder)
-
-    return merged_folder
-
-
 def get_list_of_mergeables(root_path, merging_criteria, not_that_one):
     """
     Get the list of folders under root_path with merging_criteria in their name,
@@ -109,39 +76,35 @@ def get_list_of_mergeables(root_path, merging_criteria, not_that_one):
     return dirs_to_merge
 
 
-def level_has_doublons(root_path, check_criteria):
+def get_flacs(src_dir):
     """
-    Determine if root_path has at least 2 folders with check_criteria in their names.
-    :param root_path: starting top folder.
-    :param check_criteria: string that makes you a culprit if you have it in your name.
-    :return: True if there is at least 2 folders with check_criteria in their names. False otherwise.
+    Get the list of all flac files in src_dir.
+    :param src_dir: path to the directory containing all the flac files to get.
+    :return: list of flac files
     """
-    # print "Checking level \"" + root_path + "\" for " + check_criteria + " occurences..."
-    list_of_subdirs = get_direct_subdirs(root_path)
-    list_to_check = []
-    for x in list_of_subdirs:
-        if check_criteria in x:
-            list_to_check.append(x)
-
-    if len(list_to_check) > 1:
-        return True
-    else:
-        return False
+    list_of_flacs = []
+    elements = get_direct_elements(src_dir)
+    for x in elements:
+        if ".flac" in x:
+            list_of_flacs.append(x)
+    return list_of_flacs
 
 
-def level_has_image(root_path):
+def get_merged_folder_path(dir_path, merged_pattern=const.MERGED_FOLDER_NAME):
     """
-    Determine if there is at least a file with ".jpg" or ".png" in root_path.
-    :param root_path: starting top folder.
-    :return: True if there is at least a file with ".jpg" or ".png" in root_path. False otherwise.
+    Get the full path of the merged folder in the specified directory.
+    :param dir_path: path to the directory where the merged folder is.
+    :param merged_pattern: string to look for when listing all directories.
+    :return: path to the merged folder.
     """
-    list_to_check = get_direct_elements(root_path)
-    for x in list_to_check:
-        if ".jpg" in x or ".png" in x:
-            return True
-    return False
+    list_of_dirpaths = get_direct_subdirs(dir_path)
+    for dirname_path in list_of_dirpaths:
+        if merged_pattern in dirname_path:
+            return dirname_path
+    return ""
 
 
+# ======================================= COPIERS =======================================
 def copy_from_list(src_dirs_list, dst_dir):
     """
     Copy the contents of each item in src_dirs_list into dst_dir.
@@ -204,18 +167,49 @@ def copy_images(src_dir, dst_dir):
             shutil.copyfile(src_file_path, dst_file_path)
 
 
-def get_flacs(src_dir):
+def copy_clean_single_level(album_path, pattern, upload_folder_path=const.UPLOAD_DIR):
     """
-    Get the list of all flac files in src_dir.
-    :param src_dir: path to the directory containing all the flac files to get.
-    :return: list of flac files
+    In a given album without discs, copy all folders with pattern in their name into an upload folder.
+    :param album_path: path of the album where the transcoded folders are.
+    :param upload_folder_path: path to the destination upload folder.
+    :param pattern: criteria to copy folders (only folders with the given criteria are copied).
+    :return:
     """
-    list_of_flacs = []
-    elements = get_direct_elements(src_dir)
-    for x in elements:
-        if ".flac" in x:
-            list_of_flacs.append(x)
-    return list_of_flacs
+    dirs_to_upload = get_direct_subdirs(album_path)
+    for dirname_path in dirs_to_upload:
+        if pattern in dirname_path:
+            dirname_path_stub = os.path.basename(os.path.normpath(dirname_path))
+            dirname_new_path = upload_folder_path + "/" + dirname_path_stub
+            if dirname_path and not os.path.exists(dirname_new_path):
+                shutil.copytree(dirname_path, dirname_new_path)
+
+
+def copy_clean_double_level(album_path, pattern, upload_folder_path=const.UPLOAD_DIR):
+    """
+    In a given album with discs, copy all folders with pattern in their name into an upload folder.
+    :param album_path: path of the album where the transcoded folders are.
+    :param upload_folder_path: path to the destination upload folder.
+    :param pattern: criteria to copy folders (only folders with the given criteria are copied).
+    :return:
+    """
+    album_path_stub = os.path.basename(os.path.normpath(album_path))
+
+    # Create renamed destination album folder.
+    clean_album_folder_path = upload_folder_path + "/" + album_path_stub + " " + pattern
+    if not os.path.exists(clean_album_folder_path):
+        os.makedirs(clean_album_folder_path)
+
+    #
+    list_of_discpaths = get_direct_subdirs(album_path)
+    for disc_path in list_of_discpaths:
+        disc_path_stub = os.path.basename(os.path.normpath(disc_path))
+        dirs_to_upload = get_direct_subdirs(disc_path)
+        for dirname_path in dirs_to_upload:
+            if pattern in dirname_path:
+                dirname_path_stub = os.path.basename(os.path.normpath(dirname_path))
+                dirname_new_path = clean_album_folder_path + "/" + disc_path_stub + "/" + dirname_path_stub
+                if dirname_path and not os.path.exists(dirname_new_path):
+                    shutil.copytree(dirname_path, dirname_new_path)
 
 
 def copy_merged_single_level(album_path, pattern, upload_folder_path=const.UPLOAD_DIR):
@@ -260,63 +254,73 @@ def copy_merged_double_level(album_path, mp3_format, upload_folder_path=const.UP
             shutil.copytree(merged_folder_path, dst_disc_path)
 
 
-def get_merged_folder_path(dir_path, merged_pattern=const.MERGED_FOLDER_NAME):
+# ======================================= MERGERS =======================================
+def merge_album(album_path, merging_criteria):
+    # Double level.
+    list_of_discpaths = get_direct_subdirs(album_path, const.MP3_FORMATS)
+    if list_of_discpaths:
+        for x in list_of_discpaths:
+            merge_folders(x, merging_criteria)
+
+    # Single level.
+    else:
+        merge_folders(album_path, merging_criteria)
+
+
+def merge_folders(root_path, merging_criteria):
     """
-    Get the full path of the merged folder in the specified directory.
-    :param dir_path: path to the directory where the merged folder is.
-    :param merged_pattern: string to look for when listing all directories.
+    Create a merged folder, containing the files of all folders in root_path with merging_criteria in their name.
+    :param root_path: folder containing all folders to be merged.
+    :param merging_criteria: string triggering the merging.
     :return: path to the merged folder.
     """
-    list_of_dirpaths = get_direct_subdirs(dir_path)
-    for dirname_path in list_of_dirpaths:
-        if merged_pattern in dirname_path:
-            return dirname_path
-    return ""
+    wildcard = const.MERGED_FOLDER_NAME + " "
+    # Create destination folder for all files in the list of folders to squash.
+    merged_folder = root_path + "/" + wildcard + merging_criteria
+    if not os.path.exists(merged_folder):
+        os.makedirs(merged_folder)
+
+    # Get list of folders with merging criteria in their name.
+    dirs_to_merge = get_list_of_mergeables(root_path, merging_criteria, wildcard)
+
+    # Move files in new folder.
+    copy_from_list(dirs_to_merge, merged_folder)
+
+    return merged_folder
 
 
-def copy_clean_single_level(album_path, pattern, upload_folder_path=const.UPLOAD_DIR):
+# ======================================= CHECKERS ======================================
+def level_has_doublons(root_path, check_criteria):
     """
-    In a given album without discs, copy all folders with pattern in their name into an upload folder.
-    :param album_path: path of the album where the transcoded folders are.
-    :param upload_folder_path: path to the destination upload folder.
-    :param pattern: criteria to copy folders (only folders with the given criteria are copied).
-    :return:
+    Determine if root_path has at least 2 folders with check_criteria in their names.
+    :param root_path: starting top folder.
+    :param check_criteria: string that makes you a culprit if you have it in your name.
+    :return: True if there is at least 2 folders with check_criteria in their names. False otherwise.
     """
-    dirs_to_upload = get_direct_subdirs(album_path)
-    for dirname_path in dirs_to_upload:
-        if pattern in dirname_path:
-            dirname_path_stub = os.path.basename(os.path.normpath(dirname_path))
-            dirname_new_path = upload_folder_path + "/" + dirname_path_stub
-            if dirname_path and not os.path.exists(dirname_new_path):
-                shutil.copytree(dirname_path, dirname_new_path)
+    # print "Checking level \"" + root_path + "\" for " + check_criteria + " occurences..."
+    list_of_subdirs = get_direct_subdirs(root_path)
+    list_to_check = []
+    for x in list_of_subdirs:
+        if check_criteria in x:
+            list_to_check.append(x)
+
+    if len(list_to_check) > 1:
+        return True
+    else:
+        return False
 
 
-def copy_clean_double_level(album_path, pattern, upload_folder_path=const.UPLOAD_DIR):
+def level_has_image(root_path):
     """
-    In a given album with discs, copy all folders with pattern in their name into an upload folder.
-    :param album_path: path of the album where the transcoded folders are.
-    :param upload_folder_path: path to the destination upload folder.
-    :param pattern: criteria to copy folders (only folders with the given criteria are copied).
-    :return:
+    Determine if there is at least a file with ".jpg" or ".png" in root_path.
+    :param root_path: starting top folder.
+    :return: True if there is at least a file with ".jpg" or ".png" in root_path. False otherwise.
     """
-    album_path_stub = os.path.basename(os.path.normpath(album_path))
-
-    # Create renamed destination album folder.
-    clean_album_folder_path = upload_folder_path + "/" + album_path_stub + " " + pattern
-    if not os.path.exists(clean_album_folder_path):
-        os.makedirs(clean_album_folder_path)
-
-    #
-    list_of_discpaths = get_direct_subdirs(album_path)
-    for disc_path in list_of_discpaths:
-        disc_path_stub = os.path.basename(os.path.normpath(disc_path))
-        dirs_to_upload = get_direct_subdirs(disc_path)
-        for dirname_path in dirs_to_upload:
-            if pattern in dirname_path:
-                dirname_path_stub = os.path.basename(os.path.normpath(dirname_path))
-                dirname_new_path = clean_album_folder_path + "/" + disc_path_stub + "/" + dirname_path_stub
-                if dirname_path and not os.path.exists(dirname_new_path):
-                    shutil.copytree(dirname_path, dirname_new_path)
+    list_to_check = get_direct_elements(root_path)
+    for x in list_to_check:
+        if ".jpg" in x or ".png" in x:
+            return True
+    return False
 
 
 def album_is_clean(album_path, check_criteria=[]):
