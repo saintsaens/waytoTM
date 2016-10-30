@@ -60,10 +60,7 @@ def merge_album(album_path, merging_criteria):
     list_of_discpaths = get_direct_subdirs(album_path, [const.MP3_320])
     if list_of_discpaths:
         for x in list_of_discpaths:
-            merged_folder = merge_folders(x, merging_criteria)
-            # Copy cover art into merged folder.
-            if level_has_image(x):
-                copy_images(x, merged_folder)
+            merge_folders(x, merging_criteria)
 
     # Single level.
     else:
@@ -221,9 +218,9 @@ def get_flacs(src_dir):
     return list_of_flacs
 
 
-def move_merged_single_level(album_path, upload_folder_path, mp3_format):
+def copy_merged_single_level(album_path, upload_folder_path=const.UPLOAD_DIR, mp3_format=const.MP3_320):
     """
-    Move and rename the merged folder into the upload folder.
+    Copy and rename the merged folder into the upload folder.
     :param album_path: path of the album where the merged folder is.
     :param upload_folder_path: path of the destination folder.
     :param mp3_format: format type to append to the merged folder name.
@@ -237,9 +234,9 @@ def move_merged_single_level(album_path, upload_folder_path, mp3_format):
         shutil.copytree(merged_folder_path, clean_merged_folder_path)
 
 
-def move_merged_double_level(album_path, upload_folder_path, mp3_format):
+def copy_merged_double_level(album_path, upload_folder_path=const.UPLOAD_DIR, mp3_format=const.MP3_320):
     """
-    Move and rename the merged folders into the upload folder, when album is devided into discs (additional folder
+    Copy and rename the merged folders into the upload folder, when album is divided into discs (additional folder
     level).
     :param album_path: path of the album where the merged folders are.
     :param upload_folder_path: destination folder path.
@@ -256,11 +253,10 @@ def move_merged_double_level(album_path, upload_folder_path, mp3_format):
     list_of_discpaths = get_direct_subdirs(album_path)
     for disc_path in list_of_discpaths:
         disc_path_stub = os.path.basename(os.path.normpath(disc_path))
-        if os.path.isdir(disc_path):
-            clean_merged_folder_path = clean_album_folder_path + "/" + disc_path_stub
-            dirname_path = get_merged_folder_path(disc_path)
-            if dirname_path and not os.path.exists(clean_merged_folder_path):
-                shutil.copytree(dirname_path, clean_merged_folder_path)
+        clean_merged_folder_path = clean_album_folder_path + "/" + disc_path_stub
+        dirname_path = get_merged_folder_path(disc_path)
+        if dirname_path and not os.path.exists(clean_merged_folder_path):
+            shutil.copytree(dirname_path, clean_merged_folder_path)
 
 
 def get_merged_folder_path(dir_path, merged_pattern=const.MERGED_FOLDER_NAME):
@@ -277,9 +273,53 @@ def get_merged_folder_path(dir_path, merged_pattern=const.MERGED_FOLDER_NAME):
     return ""
 
 
+def copy_clean_single_level(album_path, upload_folder_path=const.UPLOAD_DIR, pattern=const.MP3_320):
+    """
+    In a given album without discs, copy all folders with pattern in their name into an upload folder.
+    :param album_path: path of the album where the transcoded folders are.
+    :param upload_folder_path: path to the destination upload folder.
+    :param pattern: criteria to copy folders (only folders with the given criteria are copied).
+    :return:
+    """
+    dirs_to_upload = get_direct_subdirs(album_path)
+    for dirname_path in dirs_to_upload:
+        if pattern in dirname_path:
+            dirname_path_stub = os.path.basename(os.path.normpath(dirname_path))
+            dirname_new_path = upload_folder_path + "/" + dirname_path_stub
+            if dirname_path and not os.path.exists(dirname_new_path):
+                shutil.copytree(dirname_path, dirname_new_path)
+
+
+def copy_clean_double_level(album_path, upload_folder_path=const.UPLOAD_DIR, pattern=const.MP3_320):
+    """
+    In a given album with discs, copy all folders with pattern in their name into an upload folder.
+    :param album_path: path of the album where the transcoded folders are.
+    :param upload_folder_path: path to the destination upload folder.
+    :param pattern: criteria to copy folders (only folders with the given criteria are copied).
+    :return:
+    """
+    album_path_stub = os.path.basename(os.path.normpath(album_path))
+
+    # Create renamed destination album folder.
+    clean_album_folder_path = upload_folder_path + "/" + album_path_stub + " " + pattern
+    if not os.path.exists(clean_album_folder_path):
+        os.makedirs(clean_album_folder_path)
+
+    list_of_discpaths = get_direct_subdirs(album_path)
+    for disc_path in list_of_discpaths:
+        dirs_to_upload = get_direct_subdirs(disc_path)
+        for dirname_path in dirs_to_upload:
+            if pattern in dirname_path:
+                dirname_path_stub = os.path.basename(os.path.normpath(dirname_path))
+                dirname_new_path = clean_album_folder_path + "/" + dirname_path_stub
+                if dirname_path and not os.path.exists(dirname_new_path):
+                    shutil.copytree(dirname_path, dirname_new_path)
+
+
 def album_is_clean(album_path, check_criteria):
     """
-    Determine if album is clean, by checking the number of occurences
+    Determine if album is clean, by checking the number of occurrences of check_criteria in its subfolders.
+    Example: if check_criteria is "320", an album is clean if it has at most 1 folder with "320" in it.
     :param album_path:
     :param check_criteria:
     :return:

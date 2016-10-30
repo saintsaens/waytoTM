@@ -6,8 +6,9 @@ import const
 import argparse
 import logging
 
-if __name__ == '__main__':
+
 # ================================ PART 0: LOGGING THINGS =================================
+if __name__ == '__main__':
     levels = ['info', 'debug', 'error', 'warning', 'critical']
     parser = argparse.ArgumentParser()
     parser.add_argument('-l', '--level', dest='level', default='info',
@@ -18,48 +19,34 @@ if __name__ == '__main__':
 
 # ==================================== PART 1: MERGING ====================================
     # Get all subfolders in FLAC_FOLDER (level 0).
-    flac_dirs_lvl_0 = utils.get_direct_subdirs(const.FLAC_DIR)
-    logging.debug("Getting list of all folders at level 0:" + str(flac_dirs_lvl_0))
+    all_flac_albums = utils.get_direct_subdirs(const.FLAC_DIR)
+    logging.debug("Getting list of all folders at level 0:" + str(all_flac_albums))
 
     # Divide albums into clean (1 folder per format) and dirty (many folders per format, in case of VA).
     dirty_albums = []
     clean_albums = []
-    for x in flac_dirs_lvl_0:
+    for x in all_flac_albums:
         if utils.album_is_clean(x, const.MP3_320):
             clean_albums.append(x)
         else:
             dirty_albums.append(x)
 
-    for dirty_album in dirty_albums:
-        utils.merge_album(dirty_album, const.MP3_320)
+    for album in dirty_albums:
+        utils.merge_album(album, const.MP3_320)
 
-# ================================= PART 2: COPYING IMAGES ================================
-    logging.debug("Copying images into transcoded folders that did not need merging...")
-    # Check if there is an image at each level, and copy the image into all folders of that level.
-    for x in flac_dirs_lvl_0:
-        if utils.level_has_image(x):
-            logging.debug("Found image(s) in: " + x + ".")
-            if utils.get_direct_subdirs(x):
-                mp3_dirs_lvl_1 = utils.get_direct_subdirs(x)
-                for y in mp3_dirs_lvl_1:
-                    logging.debug("Copying image(s) into: " + y + "...")
-                    utils.copy_images(x, y)
-        else:
-            if utils.get_direct_subdirs(x):
-                logging.debug("Found no image in: " + x)
-                flac_dirs_lvl_1 = utils.get_direct_subdirs(x)
-                for y in flac_dirs_lvl_1:
-                    if utils.level_has_image(y):
-                        logging.debug("Found image(s) in: " + y + ".")
-                        if utils.get_direct_subdirs(y):
-                            mp3_dirs_lvl_2 = utils.get_direct_subdirs(y)
-                            for z in mp3_dirs_lvl_2:
-                                logging.debug("Copying image(s) into: " + z + ".")
-                                utils.copy_images(y, z)
+    # Copy images into merged and non-merged folders.
+    for album in all_flac_albums:
+        utils.copy_images_in_album(album)
 
-# ==================== PART 3: MOVING MERGED FOLDERS INTO UPLOAD FOLDER ===================
-    for x in flac_dirs_lvl_0:
-        if utils.get_direct_subdirs(x, const.MP3_FORMATS):
-            utils.move_merged_double_level(x, const.UPLOAD_DIR, const.MP3_320)
+# ==================== PART 3: MOVING FOLDERS INTO UPLOAD FOLDER ===================
+    for album in dirty_albums:
+        if utils.get_direct_subdirs(album, const.MP3_FORMATS):
+            utils.copy_merged_double_level(album)
         else:
-            utils.move_merged_single_level(x, const.UPLOAD_DIR, const.MP3_320)
+            utils.copy_merged_single_level(album)
+
+    for album in clean_albums:
+        if utils.get_direct_subdirs(album, const.MP3_FORMATS):
+            utils.copy_clean_double_level(album)
+        else:
+            utils.copy_clean_single_level(album)

@@ -193,7 +193,7 @@ def test_merge_folders():
     shutil.rmtree(test_path_a1)
 
 
-def test_move_merged_single_level():
+def test_copy_merged_single_level():
     upload_folder = const.TEST_PATH + "/folder5 for uploading"
     flac_folder = const.TEST_PATH + "/folder4 for merging"
     path_a1 = flac_folder + "/album1"
@@ -209,14 +209,14 @@ def test_move_merged_single_level():
     if not os.path.exists(path_a1md):
         open(path_a1md, 'a').close()
 
-    utils.move_merged_single_level(path_a1, upload_folder, const.MP3_320)
+    utils.copy_merged_single_level(path_a1, upload_folder, const.MP3_320)
     new_merged_folder = upload_folder + "/album1 [320]"
     assert os.path.exists(new_merged_folder)
     shutil.rmtree(path_a1)
     shutil.rmtree(new_merged_folder)
 
 
-def test_move_merged_double_level():
+def test_copy_merged_double_level():
     # Create all paths
     upload_folder = const.TEST_PATH + "/folder5 for uploading"
     flac_folder = const.TEST_PATH + "/folder4 for merging"
@@ -244,7 +244,7 @@ def test_move_merged_double_level():
         open(path_a2d2md, 'a').close()
 
     # Do the dragons, and assert for tests.
-    utils.move_merged_double_level(path_a2, upload_folder, const.MP3_320)
+    utils.copy_merged_double_level(path_a2, upload_folder, const.MP3_320)
     new_merged_folder1 = upload_folder + "/album2 [320]"
     new_merged_folder11 = upload_folder + "/album2 [320]/disc1"
     new_merged_folder12 = upload_folder + "/album2 [320]/disc2"
@@ -253,6 +253,55 @@ def test_move_merged_double_level():
     assert os.path.exists(new_merged_folder12)
     shutil.rmtree(path_a2)
     shutil.rmtree(new_merged_folder1)
+
+
+def test_copy_clean_single_level():
+    upload_folder = const.TEST_PATH + "/folder5 for uploading"
+    flac_folder = const.TEST_PATH + "/folder4 for merging"
+    path_a2 = flac_folder + "/album2"
+    path_a2d1 = path_a2 + "/blo [320]"
+    path_a2d2 = path_a2 + "/bla [V0]"
+    path_a2d3 = path_a2 + "/bli [V2]"
+
+    # Create all files and folders with those paths.
+    list_of_paths = [path_a2, path_a2d1, path_a2d2, path_a2d3]
+    for x in list_of_paths:
+        if not os.path.exists(x):
+            os.makedirs(x)
+
+    utils.copy_clean_single_level(path_a2, upload_folder)
+    uploaded_dir1 = upload_folder + "/blo [320]"
+    assert os.path.exists(uploaded_dir1)
+    shutil.rmtree(path_a2)
+    shutil.rmtree(uploaded_dir1)
+
+
+def test_copy_clean_double_level():
+    upload_folder = const.TEST_PATH + "/folder5 for uploading"
+    flac_folder = const.TEST_PATH + "/folder4 for merging"
+    path_a2 = flac_folder + "/album2"
+    path_a2d1 = path_a2 + "/disc1"
+    path_a2d1b1 = path_a2d1 + "/disc1 [320]"
+    path_a2d1b2 = path_a2d1 + "/disc1 [V0]"
+    path_a2d2 = path_a2 + "/disc2"
+    path_a2d2b1 = path_a2d2 + "/disc2 [320]"
+    path_a2d2b2 = path_a2d2 + "/disc2 [V0]"
+
+    # Create all files and folders with those paths.
+    list_of_paths = [path_a2, path_a2d1, path_a2d2, path_a2d1b1, path_a2d1b2, path_a2d2b1, path_a2d2b2]
+    for x in list_of_paths:
+        if not os.path.exists(x):
+            os.makedirs(x)
+
+    utils.copy_clean_double_level(path_a2, upload_folder)
+    uploaded_dir1 = upload_folder + "/album2 [320]"
+    uploaded_dir11 = upload_folder + "/album2 [320]/disc1 [320]"
+    uploaded_dir12 = upload_folder + "/album2 [320]/disc2 [320]"
+    assert os.path.exists(uploaded_dir1)
+    assert os.path.exists(uploaded_dir11)
+    assert os.path.exists(uploaded_dir12)
+    shutil.rmtree(path_a2)
+    shutil.rmtree(uploaded_dir1)
 
 
 def test_get_merged_folder_path():
