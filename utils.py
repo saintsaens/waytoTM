@@ -237,7 +237,10 @@ def copy_merged_double_level(album_path, mp3_format, upload_folder_path=const.UP
     :param mp3_format: format type to append to the appropriate folders.
     :return: nothing.
     """
+    # Prepare the album name, by removing the "FLAC" occurrences.
     album_path_stub = os.path.basename(os.path.normpath(album_path))
+    album_path_stub = album_path_stub.strip(' [FLAC]')
+    album_path_stub = album_path_stub.strip(' (FLAC)')
 
     # Create renamed destination album folder.
     dst_album_path = upload_folder_path + "/" + album_path_stub + " " + mp3_format
