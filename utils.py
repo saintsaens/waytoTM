@@ -316,25 +316,29 @@ def copy_clean_double_level(album_path, upload_folder_path=const.UPLOAD_DIR, pat
                     shutil.copytree(dirname_path, dirname_new_path)
 
 
-def album_is_clean(album_path, check_criteria):
+def album_is_clean(album_path, check_criteria=[]):
     """
     Determine if album is clean, by checking the number of occurrences of check_criteria in its subfolders.
-    Example: if check_criteria is "320", an album is clean if it has at most 1 folder with "320" in it.
+    Example: if check_criteria is ["320"], an album is clean if it has at most 1 folder with "320" in it.
     :param album_path:
     :param check_criteria:
     :return:
     """
 
     # Double level.
-    list_of_discpaths = get_direct_subdirs(album_path, [const.MP3_320])
+    list_of_discpaths = get_direct_subdirs(album_path, const.MP3_FORMATS)
     if list_of_discpaths:
         for x in list_of_discpaths:
-            if not folder_is_clean(x, check_criteria):
-                return False
+            for y in check_criteria:
+                if not folder_is_clean(x, y):
+                    return False
         return True
 
     # Single level.
-    return folder_is_clean(album_path, check_criteria)
+    for y in check_criteria:
+        if not folder_is_clean(album_path, y):
+            return False
+    return True
 
 
 def folder_is_clean(dir_path, check_criteria):
