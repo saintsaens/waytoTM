@@ -89,7 +89,7 @@ def test_get_list_of_mergeables():
     shutil.rmtree(path_a)
 
 
-def test_level_has_doublons_320():
+def test_folder_is_clean_320():
     path_a1 = const.TEST_PATH + "/swdoublons"
     path_a11 = path_a1 + "/luke [320]"
     path_a12 = path_a1 + "/leia [320]"
@@ -103,13 +103,13 @@ def test_level_has_doublons_320():
         if not os.path.exists(x):
             os.makedirs(x)
 
-    assert utils.level_has_doublons(path_a1, const.MP3_320) is True
-    assert utils.level_has_doublons(path_a2, const.MP3_320) is False
+    assert utils.folder_is_clean(path_a1, const.MP3_320) is False
+    assert utils.folder_is_clean(path_a2, const.MP3_320) is True
     shutil.rmtree(path_a1)
     shutil.rmtree(path_a2)
 
 
-def test_level_has_doublons_v0():
+def test_folder_is_clean_v0():
     path_a1 = const.TEST_PATH + "/swdoublons"
     path_a11 = path_a1 + "/luke [V0]"
     path_a12 = path_a1 + "/leia [V0]"
@@ -123,13 +123,13 @@ def test_level_has_doublons_v0():
         if not os.path.exists(x):
             os.makedirs(x)
 
-    assert utils.level_has_doublons(path_a1, const.MP3_V0) is True
-    assert utils.level_has_doublons(path_a2, const.MP3_V0) is False
+    assert utils.folder_is_clean(path_a1, const.MP3_V0) is False
+    assert utils.folder_is_clean(path_a2, const.MP3_V0) is True
     shutil.rmtree(path_a1)
     shutil.rmtree(path_a2)
 
 
-def test_level_has_doublons_v2():
+def test_folder_is_clean_v2():
     path_a1 = const.TEST_PATH + "/swdoublons"
     path_a11 = path_a1 + "/luke [V2]"
     path_a12 = path_a1 + "/leia [V2]"
@@ -143,8 +143,8 @@ def test_level_has_doublons_v2():
         if not os.path.exists(x):
             os.makedirs(x)
 
-    assert utils.level_has_doublons(path_a1, const.MP3_V2) is True
-    assert utils.level_has_doublons(path_a2, const.MP3_V2) is False
+    assert utils.folder_is_clean(path_a1, const.MP3_V2) is False
+    assert utils.folder_is_clean(path_a2, const.MP3_V2) is True
     shutil.rmtree(path_a1)
     shutil.rmtree(path_a2)
 
@@ -381,7 +381,7 @@ def test_copy_merged_single_level():
         list_of_paths = []
         new_path1 = path_a1 + "/bla " + x
         new_path2 = path_a1 + "/blo " + x
-        new_path3 = path_a1 + "/Merged " + x
+        new_path3 = path_a1 + "/" + const.MERGED_FOLDER_NAME + x
         if x is const.MP3_320:
             new_path31 = new_path3 + "/leia320.mp3"
         if x is const.MP3_V0:
@@ -424,21 +424,21 @@ def test_copy_merged_double_level():
         new_path11 = new_path1 + "/bla " + x
         new_path12 = new_path1 + "/blo " + x
         if x is const.MP3_320:
-            new_path13 = new_path1 + "/Merged " + x
+            new_path13 = new_path1 + "/" + const.MERGED_FOLDER_NAME + " " + x
             new_path131 = new_path13 + "/leia320.mp3"
             list_of_paths.append(new_path13)
         if x is const.MP3_V0:
-            new_path13 = new_path1 + "/Merged " + x
+            new_path13 = new_path1 + "/" + const.MERGED_FOLDER_NAME + " " + x
             new_path131 = new_path13 + "/leiaV0.mp3"
             list_of_paths.append(new_path13)
         new_path21 = new_path2 + "/bla " + x
         new_path22 = new_path2 + "/blo " + x
         if x is const.MP3_320:
-            new_path23 = new_path2 + "/Merged " + x
+            new_path23 = new_path2 + "/" + const.MERGED_FOLDER_NAME + " " + x
             new_path231 = new_path23 + "/luke320.mp3"
             list_of_paths.append(new_path23)
         if x is const.MP3_V0:
-            new_path23 = new_path2 + "/Merged " + x
+            new_path23 = new_path2 + "/" + const.MERGED_FOLDER_NAME + " " + x
             new_path231 = new_path23 + "/lukeV0.mp3"
             list_of_paths.append(new_path23)
         list_of_paths.append(new_path11)
@@ -526,7 +526,7 @@ def test_get_merged_folder_path():
     path_a1 = path_a + "/album1"
 
     for x in const.MP3_FORMATS:
-        merged_pattern = "Merged " + x
+        merged_pattern = const.MERGED_FOLDER_NAME + " " + x
         list_of_paths = []
         path_a1b1 = path_a1 + "/bla " + x
         list_of_paths.append(path_a1b1)

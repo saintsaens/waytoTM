@@ -8,13 +8,13 @@ import const
 
 # ======================================= GETTERS =======================================
 def get_direct_subdirs(root_dir_path, excluding_criteria=[]):
-    """Return the list of the paths of directories (excluding files) directly under the directory root_dir_path, except
-    folders containing name_criteria.
+    """Get the list of the paths of directories (excluding files) directly under the directory root_dir_path, except
+    folders containing excluding_criteria.
 
     :rtype: list
     :param root_dir_path: path to folder where to get the direct subdirectories.
-    :param excluding_criteria: string excluding folders containing it in their name.
-    :return: list of direct subdirectories.
+    :param excluding_criteria: list of strings excluding folders containing at least one of them in their name.
+    :return: list of paths of direct subdirectories.
     """
     raw_list_of_subdirs = filter(os.path.isdir, [os.path.join(root_dir_path, f) for f in os.listdir(root_dir_path)])
     list_of_subdirs = []
@@ -39,9 +39,9 @@ def get_direct_subdirs(root_dir_path, excluding_criteria=[]):
 
 def get_direct_elements(root_dir_path):
     """
-    Get the list of the paths of directories and files directly under the directory root_dir_path.
+    Get the list of the paths of directories and files (except .DS_Store) directly under the directory root_dir_path.
     :param root_dir_path: path to folder where to get the direct elements.
-    :return: list of direct elements.
+    :return: list of paths of direct elements.
     """
     # Get list of immediate elements.
     stub_list = os.listdir(root_dir_path)
@@ -80,7 +80,7 @@ def get_flacs(src_dir):
     """
     Get the list of all flac files in src_dir.
     :param src_dir: path to the directory containing all the flac files to get.
-    :return: list of flac files
+    :return: list of paths of flac files.
     """
     list_of_flacs = []
     elements = get_direct_elements(src_dir)
@@ -92,7 +92,8 @@ def get_flacs(src_dir):
 
 def get_merged_folder_path(dir_path, merged_pattern=const.MERGED_FOLDER_NAME):
     """
-    Get the full path of the merged folder in the specified directory.
+    Get the full path of the merged folder (first folder found with merged_pattern in its name) in the
+    specified directory.
     :param dir_path: path to the directory where the merged folder is.
     :param merged_pattern: string to look for when listing all directories.
     :return: path to the merged folder.
@@ -124,6 +125,12 @@ def copy_from_list(src_dirs_list, dst_dir):
 
 
 def copy_images_in_album(album_path):
+    """
+    Copy all images from the original album, in all subfolders of this album. And then make some more coffee.
+    Deal with disc'ed or discless albums regardless ("double" or "single" level).
+    :param album_path: path to the double or single level album.
+    :return: nothingness.
+    """
     # Double level.
     list_of_discpaths = get_direct_subdirs(album_path, const.MP3_FORMATS)
     if list_of_discpaths:
@@ -139,6 +146,12 @@ def copy_images_in_album(album_path):
 
 
 def copy_images_to_list(src_dir, list_of_dst_dir):
+    """
+    Copy all images from a given folder, into a list of folders.
+    :param src_dir: folder where images are.
+    :param list_of_dst_dir: list of directory paths where to copy all images.
+    :return: niet.
+    """
     for x in list_of_dst_dir:
         copy_images(src_dir, x)
 
@@ -170,10 +183,10 @@ def copy_images(src_dir, dst_dir):
 def copy_clean_single_level(album_path, pattern, upload_folder_path=const.UPLOAD_DIR):
     """
     In a given album without discs, copy all folders with pattern in their name into an upload folder.
-    :param album_path: path of the album where the transcoded folders are.
+    :param album_path: path of the root album.
     :param upload_folder_path: path to the destination upload folder.
-    :param pattern: criteria to copy folders (only folders with the given criteria are copied).
-    :return:
+    :param pattern: criteria to copy folders (only folders with the given pattern in their names are copied).
+    :return: nada.
     """
     dirs_to_upload = get_direct_subdirs(album_path)
     for dirname_path in dirs_to_upload:
@@ -187,10 +200,10 @@ def copy_clean_single_level(album_path, pattern, upload_folder_path=const.UPLOAD
 def copy_clean_double_level(album_path, pattern, upload_folder_path=const.UPLOAD_DIR):
     """
     In a given album with discs, copy all folders with pattern in their name into an upload folder.
-    :param album_path: path of the album where the transcoded folders are.
+    :param album_path: path of the root album.
     :param upload_folder_path: path to the destination upload folder.
-    :param pattern: criteria to copy folders (only folders with the given criteria are copied).
-    :return:
+    :param pattern: criteria to copy folders (only folders with the given pattern in their names are copied).
+    :return: rien.
     """
     album_path_stub = os.path.basename(os.path.normpath(album_path))
 
@@ -199,7 +212,6 @@ def copy_clean_double_level(album_path, pattern, upload_folder_path=const.UPLOAD
     if not os.path.exists(clean_album_folder_path):
         os.makedirs(clean_album_folder_path)
 
-    #
     list_of_discpaths = get_direct_subdirs(album_path)
     for disc_path in list_of_discpaths:
         disc_path_stub = os.path.basename(os.path.normpath(disc_path))
@@ -212,35 +224,40 @@ def copy_clean_double_level(album_path, pattern, upload_folder_path=const.UPLOAD
                     shutil.copytree(dirname_path, dirname_new_path)
 
 
-def copy_merged_single_level(album_path, pattern, upload_folder_path=const.UPLOAD_DIR):
+def copy_merged_single_level(album_path, mp3_format, upload_folder_path=const.UPLOAD_DIR):
     """
-    Copy and rename the merged folder into the upload folder.
-    :param album_path: path of the album where the merged folder is.
+    In a given album without discs, copy all merged folders with pattern in their name into an upload folder.
+    The copied folders are renamed according to the album name.
+    :param album_path: path of the album where the merged folders are.
     :param upload_folder_path: path of the destination folder.
-    :param pattern: format type to append to the merged folder name.
+    :param mp3_format: criteria to copy folders (only folders with the given pattern in their names are copied). The
+    pattern is also used as appendix to the renamed folder.
     :return: nothing.
     """
+    # Prepare the album name, and remove the "FLAC" occurrences.
     album_path_stub = os.path.basename(os.path.normpath(album_path))
-    clean_merged_folder_path = upload_folder_path + "/" + album_path_stub + " " + pattern
+    album_path_stub = album_path_stub.strip(' [FLAC]')
+
+    dst_album_path = upload_folder_path + "/" + album_path_stub + " " + mp3_format
 
     merged_folder_path = get_merged_folder_path(album_path)
-    if merged_folder_path and not os.path.exists(clean_merged_folder_path):
-        shutil.copytree(merged_folder_path, clean_merged_folder_path)
+    if merged_folder_path and not os.path.exists(dst_album_path):
+        shutil.copytree(merged_folder_path, dst_album_path)
 
 
 def copy_merged_double_level(album_path, mp3_format, upload_folder_path=const.UPLOAD_DIR):
     """
-    Copy and rename the merged folders into the upload folder, when album is divided into discs (additional folder
-    level).
+    In a given album with discs, copy all merged folders with pattern in their name into an upload folder.
+    The copied folders are renamed according to the album and discs names.
     :param album_path: path of the album where the merged folders are.
-    :param upload_folder_path: destination folder path.
-    :param mp3_format: format type to append to the appropriate folders.
+    :param upload_folder_path: path of the destination folder.
+    :param mp3_format: criteria to copy folders (only folders with the given pattern in their names are copied). This
+    parameter is also used as appendix to the renamed folder.
     :return: nothing.
     """
-    # Prepare the album name, by removing the "FLAC" occurrences.
+    # Prepare the album name, and remove the "FLAC" occurrences.
     album_path_stub = os.path.basename(os.path.normpath(album_path))
     album_path_stub = album_path_stub.strip(' [FLAC]')
-    album_path_stub = album_path_stub.strip(' (FLAC)')
 
     # Create renamed destination album folder.
     dst_album_path = upload_folder_path + "/" + album_path_stub + " " + mp3_format
@@ -259,6 +276,13 @@ def copy_merged_double_level(album_path, mp3_format, upload_folder_path=const.UP
 
 # ======================================= MERGERS =======================================
 def merge_album(album_path, merging_criteria):
+    """
+    Merge transcoded folders in an album, regardless of it being disc'ed or discless.
+    Basically just calling the merge_folders function, but dealing with the discs :/
+    :param album_path: path to the album.
+    :param merging_criteria: string triggering the merging of all folders having it in their names.
+    :return: nothing.
+    """
     # Double level.
     list_of_discpaths = get_direct_subdirs(album_path, const.MP3_FORMATS)
     if list_of_discpaths:
@@ -274,7 +298,7 @@ def merge_folders(root_path, merging_criteria):
     """
     Create a merged folder, containing the files of all folders in root_path with merging_criteria in their name.
     :param root_path: folder containing all folders to be merged.
-    :param merging_criteria: string triggering the merging.
+    :param merging_criteria: string triggering the merging of all folders having it in their names.
     :return: path to the merged folder.
     """
     wildcard = const.MERGED_FOLDER_NAME + " "
@@ -293,31 +317,11 @@ def merge_folders(root_path, merging_criteria):
 
 
 # ======================================= CHECKERS ======================================
-def level_has_doublons(root_path, check_criteria):
-    """
-    Determine if root_path has at least 2 folders with check_criteria in their names.
-    :param root_path: starting top folder.
-    :param check_criteria: string that makes you a culprit if you have it in your name.
-    :return: True if there is at least 2 folders with check_criteria in their names. False otherwise.
-    """
-    # print "Checking level \"" + root_path + "\" for " + check_criteria + " occurences..."
-    list_of_subdirs = get_direct_subdirs(root_path)
-    list_to_check = []
-    for x in list_of_subdirs:
-        if check_criteria in x:
-            list_to_check.append(x)
-
-    if len(list_to_check) > 1:
-        return True
-    else:
-        return False
-
-
 def level_has_image(root_path):
     """
-    Determine if there is at least a file with ".jpg" or ".png" in root_path.
-    :param root_path: starting top folder.
-    :return: True if there is at least a file with ".jpg" or ".png" in root_path. False otherwise.
+    Determine if there is at least one file with ".jpg" or ".png" in root_path.
+    :param root_path: path to the directory being checked.
+    :return: True if there is at least one file with ".jpg" or ".png" in root_path. False otherwise.
     """
     list_to_check = get_direct_elements(root_path)
     for x in list_to_check:
@@ -328,11 +332,12 @@ def level_has_image(root_path):
 
 def album_is_clean(album_path, check_criteria=[]):
     """
-    Determine if album is clean, by checking the number of occurrences of check_criteria in its subfolders.
+    Determine if album has at most one occurrence of folders with check_criteria.
+    If the album is divided in discs, each disc is checked.
     Example: if check_criteria is ["320"], an album is clean if it has at most 1 folder with "320" in it.
-    :param album_path:
-    :param check_criteria:
-    :return:
+    :param album_path: path to the album being checked.
+    :param check_criteria: list of criteria to check.
+    :return: True if album has at most one folder with check_criteria. False otherwise.
     """
 
     # Double level.
@@ -352,6 +357,12 @@ def album_is_clean(album_path, check_criteria=[]):
 
 
 def folder_is_clean(dir_path, check_criteria):
+    """
+    Determine if root_path has at least 2 folders with check_criteria in their names.
+    :param dir_path: path to the directory being checked.
+    :param check_criteria: string that makes you a culprit if you're not the only one to have it in your name.
+    :return: True if there is at least 2 folders with check_criteria in their names. False otherwise.
+    """
     list_of_doublons = []
     list_of_dirpaths = get_direct_subdirs(dir_path)
     for x in list_of_dirpaths:
@@ -364,9 +375,10 @@ def folder_is_clean(dir_path, check_criteria):
 
 def folder_has_formats(dir_path):
     """
-    Check the available transcoded formats in a direct folder.
+    Check the available transcoded formats in a direct folder. Scan a directory, and determine in there are only
+    folders with "320", "V0", "V2" or a combination of those 3 in their names.
     :param dir_path: path to the folder where we look at the transcoded subfolders.
-    :return: list of transcoded formats.
+    :return: list of available transcoded formats.
     """
     list_of_formats = []
     list_of_dirs = get_direct_subdirs(dir_path)
@@ -386,6 +398,11 @@ def folder_has_formats(dir_path):
 
 
 def album_has_formats(album_path):
+    """
+    Check the available transcoded formats in an album, regardless of it being disc'ed or discless.
+    :param dir_path: path to the folder where we look at the transcoded subfolders.
+    :return: list of available transcoded formats.
+    """
     # Double level.
     list_of_discpaths = get_direct_subdirs(album_path, const.MP3_FORMATS)
     if list_of_discpaths:
