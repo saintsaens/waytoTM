@@ -9,6 +9,8 @@ import const
 
 def test_get_direct_subdirs():
     path_a1 = const.TEST_PATH + "/folder1 for counting"
+    if not os.path.exists(path_a1):
+        os.makedirs(path_a1)
     path_a14 = path_a1 + "/folder1.1"
     path_a15 = path_a1 + "/folder1.2"
     path_a16 = path_a1 + "/subfolder1.1 [V2]"
@@ -19,7 +21,7 @@ def test_get_direct_subdirs():
     path_a181 = path_a18 + "/doc1.3.1"
     path_a182 = path_a18 + "/doc1.3.2"
 
-    list_of_paths = [path_a1, path_a14, path_a15, path_a16, path_a17, path_a18]
+    list_of_paths = [path_a14, path_a15, path_a16, path_a17, path_a18]
     for x in list_of_paths:
         if not os.path.exists(x):
             os.makedirs(x)
@@ -32,13 +34,16 @@ def test_get_direct_subdirs():
     if not os.path.exists(path_a182):
         open(path_a182, 'a').close()
 
-    assert utils.get_direct_subdirs(path_a1) == [path_a14, path_a15, path_a16, path_a17, path_a18]
-    assert utils.get_direct_subdirs(path_a1, const.MP3_FORMATS) == [path_a14, path_a15]
+    assert type(utils.get_direct_subdirs(path_a1)) == list
+    assert set(utils.get_direct_subdirs(path_a1)) == set(list_of_paths)
+    assert set(utils.get_direct_subdirs(path_a1, const.MP3_FORMATS)) == set([path_a14, path_a15])
     shutil.rmtree(path_a1)
 
 
 def test_get_direct_elements():
     path_a1 = const.TEST_PATH + "/folder1 for counting"
+    if not os.path.exists(path_a1):
+        os.makedirs(path_a1)
     path_a14 = path_a1 + "/folder1.1"
     path_a15 = path_a1 + "/folder1.2"
     path_a16 = path_a1 + "/subfolder1.1 [V2]"
@@ -49,7 +54,7 @@ def test_get_direct_elements():
     path_a181 = path_a18 + "/doc1.3.1"
     path_a182 = path_a18 + "/doc1.3.2"
 
-    list_of_paths = [path_a1, path_a14, path_a15, path_a16, path_a17, path_a18]
+    list_of_paths = [path_a14, path_a15, path_a16, path_a17, path_a18]
     for x in list_of_paths:
         if not os.path.exists(x):
             os.makedirs(x)
@@ -63,7 +68,7 @@ def test_get_direct_elements():
         open(path_a182, 'a').close()
 
     assert type(utils.get_direct_elements(path_a1)) == list
-    assert len(utils.get_direct_elements(path_a1)) == 5
+    assert set(utils.get_direct_elements(path_a1)) == set(list_of_paths)
     shutil.rmtree(path_a1)
 
 
@@ -81,11 +86,14 @@ def test_get_list_of_mergeables():
         if not os.path.exists(x):
             os.makedirs(x)
 
+    list_of_320 = [path_a43, path_a44]
+    list_of_v0 = [path_a45]
+
     dont_merge_me = "dontmerge"
     assert type(utils.get_list_of_mergeables(path_a4, const.MP3_320, dont_merge_me)) == list
-    assert len(utils.get_list_of_mergeables(path_a4, const.MP3_320, dont_merge_me)) == 2
-    assert len(utils.get_list_of_mergeables(path_a4, const.MP3_V0, dont_merge_me)) == 1
-    assert len(utils.get_list_of_mergeables(path_a4, const.MP3_V2, dont_merge_me)) == 0
+    assert set(utils.get_list_of_mergeables(path_a4, const.MP3_320, dont_merge_me)) == set(list_of_320)
+    assert set(utils.get_list_of_mergeables(path_a4, const.MP3_V0, dont_merge_me)) == set(list_of_v0)
+    assert not set(utils.get_list_of_mergeables(path_a4, const.MP3_V2, dont_merge_me))
     shutil.rmtree(path_a)
 
 
