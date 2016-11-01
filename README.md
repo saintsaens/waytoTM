@@ -75,3 +75,25 @@ General folder containing all albums in FLAC (unchanged) AND a ready-to-upload f
 --- Disc 1 (containing transcoded mp3 + artworks)
 --- Disc 2 (containing transcoded mp3 + artworks)
 ```
+
+### Prerequisites
+
+You will need python and pytest.
+* [Python 2.7.10](https://www.python.org/downloads/release/python-2710/) - Python 3 might work, but untested here
+* [Pytest](http://doc.pytest.org/en/latest/getting-started.html)
+
+Create a const.py file in your project root folder, with the following variables:
+```
+FLAC_DIR = "path/to/your/flac/albums"
+UPLOAD_DIR = "path/to/your/upload/folder"
+MP3_320 = "[320]"
+MP3_V0 = "[V0]"
+MP3_V2 = "[V2]"
+MP3_FORMATS = [MP3_320, MP3_V0, MP3_V2]
+TEST_PATH = "path/to/the/project/fakedatastore"
+MERGED_FOLDER_NAME = "Merged"
+```
+
+## Running the tests
+
+Go into the project root folder, and run pytest.
