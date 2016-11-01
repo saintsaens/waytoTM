@@ -5,4 +5,4 @@
 *.pyc
 personal_constants.py
 __pycache__
-.const.py
+const.py
