@@ -326,7 +326,7 @@ def test_get_flac_list():
             open(x, 'a').close()
 
     list_of_flacs = utils.get_flacs(path_a1)
-    assert list_of_flacs == [path_a12, path_a11]
+    assert set(list_of_flacs) == set([path_a12, path_a11])
     shutil.rmtree(path_a)
 
 
